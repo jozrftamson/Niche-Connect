@@ -131,20 +131,28 @@ If `npm install` fails:
 
 ## Anleitung auf Deutsch / German Instructions
 
-### Schnellstart
+### Code aus Git Repository ausführen
 
-So führen Sie den Code aus:
+So führen Sie den Code aus einem Git Repository aus:
 
-1. **Abhängigkeiten installieren**:
+1. **Repository klonen** (falls noch nicht geschehen):
+   ```bash
+   git clone https://github.com/jozrftamson/Niche-Connect.git
+   cd Niche-Connect
+   ```
+
+2. **Abhängigkeiten installieren**:
    ```bash
    npm install
    ```
 
-2. **Anwendung starten**:
+3. **Anwendung starten**:
    ```bash
    npm run dev
    ```
 
-3. **Im Browser öffnen**: `http://localhost:5000`
+4. **Im Browser öffnen**: `http://localhost:5000`
 
 Die Anwendung läuft mit In-Memory-Speicher und benötigt keine Datenbank für die Entwicklung.
+
+**Hinweis**: Git ist ein Versionskontrollsystem zum Verwalten von Code. Um den Code auszuführen, müssen Sie ihn zuerst aus Git klonen (wie oben gezeigt) und dann lokal auf Ihrem Computer mit `npm run dev` starten.
