@@ -8,7 +8,7 @@ Before running this application, ensure you have the following installed:
 
 - **Node.js** (version 20 or higher)
 - **npm** (comes with Node.js)
-- **PostgreSQL** (version 16 or higher) - *Optional, only needed for persistent data storage*
+- **PostgreSQL** (version 12 or higher) - *Optional, only needed for persistent data storage*
 
 ## Installation
 
@@ -110,7 +110,10 @@ http://localhost:5000
 If you encounter database connection errors:
 - Ensure PostgreSQL is running
 - Verify your `DATABASE_URL` is correct in the `.env` file
-- Check that the database exists or create it: `createdb niche_connect`
+- Check that the database exists or create it using one of these methods:
+  - Using psql: `createdb -U username niche_connect`
+  - Using SQL: `CREATE DATABASE niche_connect;`
+  - Using a GUI tool like pgAdmin or DBeaver
 
 ### Port Already in Use
 
