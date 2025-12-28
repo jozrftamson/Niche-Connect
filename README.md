@@ -8,7 +8,7 @@ Before running this application, ensure you have the following installed:
 
 - **Node.js** (version 20 or higher)
 - **npm** (comes with Node.js)
-- **PostgreSQL** (version 16 or higher)
+- **PostgreSQL** (version 16 or higher) - *Optional, only needed for persistent data storage*
 
 ## Installation
 
@@ -25,7 +25,11 @@ Before running this application, ensure you have the following installed:
 
 ## Environment Setup
 
-The application requires a PostgreSQL database connection. You need to set up the `DATABASE_URL` environment variable.
+The application can run with in-memory storage by default for development. However, for production or if you want persistent data, you'll need to set up a PostgreSQL database.
+
+### Optional: Database Configuration
+
+If you want to use PostgreSQL instead of in-memory storage:
 
 1. **Copy the example environment file**:
    ```bash
@@ -39,30 +43,27 @@ The application requires a PostgreSQL database connection. You need to set up th
 
    Replace `username`, `password`, and the database name with your actual PostgreSQL credentials.
 
-## Database Setup
-
-After configuring your environment variables, push the database schema:
-
-```bash
-npm run db:push
-```
-
-This command uses Drizzle Kit to sync your database schema with the definitions in the codebase.
+3. **Push the database schema** (only needed if using PostgreSQL):
+   ```bash
+   npm run db:push
+   ```
 
 ## Running the Application
 
-### Development Mode
+### Quick Start (No Database Required)
 
-You have two options to run the application in development mode:
+The fastest way to get started is to run the development server, which uses in-memory storage:
 
-**Option 1: Run both client and server together** (recommended):
 ```bash
 npm run dev
 ```
 
 This starts the Express server with hot-reloading on port 5000. The server also handles serving the Vite development client.
 
-**Option 2: Run client separately**:
+### Alternative: Client-Only Development
+
+You can also run only the Vite development server:
+
 ```bash
 npm run dev:client
 ```
@@ -122,3 +123,25 @@ If port 5000 is already in use:
 If `npm install` fails:
 - Try clearing the npm cache: `npm cache clean --force`
 - Delete `node_modules` and `package-lock.json`, then run `npm install` again
+
+---
+
+## Anleitung auf Deutsch / German Instructions
+
+### Schnellstart
+
+So führen Sie den Code aus:
+
+1. **Abhängigkeiten installieren**:
+   ```bash
+   npm install
+   ```
+
+2. **Anwendung starten**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Im Browser öffnen**: `http://localhost:5000`
+
+Die Anwendung läuft mit In-Memory-Speicher und benötigt keine Datenbank für die Entwicklung.
