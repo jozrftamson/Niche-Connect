@@ -11,7 +11,7 @@ import {
   users,
 } from "../shared/schema.js";
 import { randomUUID } from "crypto";
-import { getDb } from "./db";
+import { getDb } from "./db.js";
 
 // modify the interface with any CRUD methods
 // you might need
