@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { insertPostSchema } from "../shared/schema.js";
-import { storage } from "../server/storage.js";
+import { insertPostSchema, posts } from "../shared/schema.js";
+import { getDb } from "./_db.js";
 import { readJsonBody, sendJson } from "./_utils.js";
 
 export default async function handler(
@@ -8,15 +8,17 @@ export default async function handler(
   res: ServerResponse,
 ) {
   if (req.method === "GET") {
-    const posts = await storage.listPosts();
-    return sendJson(res, 200, { ok: true, posts });
+    const db = getDb();
+    const rows = await db.select().from(posts);
+    return sendJson(res, 200, { ok: true, posts: rows });
   }
 
   if (req.method === "POST") {
     const body = await readJsonBody(req);
     const payload = insertPostSchema.parse(body);
-    const post = await storage.createPost(payload);
-    return sendJson(res, 201, { ok: true, post });
+    const db = getDb();
+    const rows = await db.insert(posts).values(payload).returning();
+    return sendJson(res, 201, { ok: true, post: rows[0] });
   }
 
   res.statusCode = 405;
