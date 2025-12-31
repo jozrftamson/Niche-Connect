@@ -1,4 +1,6 @@
 import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import {
   engagements,
   posts,
@@ -11,7 +13,26 @@ import {
   users,
 } from "../shared/schema.js";
 import { randomUUID } from "crypto";
-import { getDb } from "./db.js";
+
+let pool: Pool | undefined;
+let dbInstance: ReturnType<typeof drizzle> | undefined;
+
+function getDb() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set");
+  }
+
+  if (!pool) {
+    pool = new Pool({ connectionString });
+  }
+
+  if (!dbInstance) {
+    dbInstance = drizzle(pool);
+  }
+
+  return dbInstance;
+}
 
 // modify the interface with any CRUD methods
 // you might need
