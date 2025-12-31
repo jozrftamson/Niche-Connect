@@ -43,4 +43,8 @@ serverless functions under `/api/*`.
 
 When deploying Niche-Connect to Vercel, the API is exposed via:
 
-- `api/index.ts` → `/api/*`
+- `api/health.ts` → `/api/health`
+- `api/echo.ts` → `/api/echo`
+- `api/posts.ts` → `/api/posts`
+- `api/posts/sample.ts` → `/api/posts/sample`
+- `api/engagements.ts` → `/api/engagements`
