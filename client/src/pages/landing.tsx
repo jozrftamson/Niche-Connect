@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { ArrowRight, CheckCircle, Shield } from "lucide-react";
 
 export default function Landing() {
+  const miniAppUrl = import.meta.env.VITE_MINIAPP_URL as string | undefined;
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-6 py-4 flex items-center justify-between">
@@ -35,9 +37,22 @@ export default function Landing() {
               <ArrowRight className="ml-2" size={18} />
             </Button>
           </Link>
-          <Button variant="secondary" size="lg" className="rounded-full text-lg h-14 px-8 w-full sm:w-auto">
-            View Demo
-          </Button>
+          {miniAppUrl ? (
+            <a href={miniAppUrl} target="_blank" rel="noreferrer">
+              <Button variant="secondary" size="lg" className="rounded-full text-lg h-14 px-8 w-full sm:w-auto">
+                Open Mini App
+              </Button>
+            </a>
+          ) : (
+            <Button
+              variant="secondary"
+              size="lg"
+              className="rounded-full text-lg h-14 px-8 w-full sm:w-auto"
+              disabled
+            >
+              Mini App (set VITE_MINIAPP_URL)
+            </Button>
+          )}
         </div>
 
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
