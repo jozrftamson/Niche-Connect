@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { storage } from "../../server/storage";
-import { sendJson } from "../_utils";
+import { storage } from "../../server/storage.js";
+import { sendJson } from "../_utils.js";
 
 export default async function handler(
   _req: IncomingMessage,

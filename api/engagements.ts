@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { insertEngagementSchema } from "@shared/schema";
-import { storage } from "../server/storage";
-import { readJsonBody, sendJson } from "./_utils";
+import { insertEngagementSchema } from "../shared/schema.js";
+import { storage } from "../server/storage.js";
+import { readJsonBody, sendJson } from "./_utils.js";
 
 export default async function handler(
   req: IncomingMessage,
