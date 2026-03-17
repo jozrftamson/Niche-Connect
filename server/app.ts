@@ -62,7 +62,9 @@ export function createApp(): Express {
 }
 
 export async function initApp(app: Express, httpServer?: Server) {
-  await registerRoutes(httpServer, app);
+  if (httpServer) {
+    await registerRoutes(httpServer, app);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

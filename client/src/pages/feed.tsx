@@ -58,7 +58,7 @@ function mapAgentRecordToPost(item: AgentSearchItem): Post {
   };
 }
 
-function parseFilterParams() {
+function parseFilterParams(): FeedFilters {
   const params = new URLSearchParams(window.location.search);
   const niche = params.get("niche") ?? "all";
   const sort = (params.get("sort") as SortOption) ?? "newest";
@@ -135,7 +135,7 @@ function formatRelative(timestamp: string) {
 
 export default function Feed() {
   const { posts, templates, addPoints } = useStore();
-  const [filters, setFilters] = useState(parseFilterParams);
+  const [filters, setFilters] = useState<FeedFilters>(parseFilterParams);
   const [agentPosts, setAgentPosts] = useState<Post[] | null>(null);
   const [agentLoading, setAgentLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
