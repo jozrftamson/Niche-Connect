@@ -27,12 +27,12 @@ interface UserState {
     avatar: string;
     selectedNiche: string | null;
   } | null;
-  
+
   posts: Post[];
   currentIndex: number;
-  
+
   templates: CommentTemplate[];
-  
+
   // Actions
   login: (name: string) => void;
   logout: () => void;
@@ -120,10 +120,15 @@ export const useStore = create<UserState>()(
         user: state.user ? { ...state.user, points: state.user.points + amount } : null
       })),
 
-      nextPost: () => set((state) => ({
-        currentIndex: (state.currentIndex + 1) % state.posts.length
-      })),
-      
+      nextPost: () => set((state) => {
+        if (state.posts.length === 0) {
+          return { currentIndex: 0 };
+        }
+
+        // Move forward without wrapping to avoid invalid load states at list boundaries.
+        return { currentIndex: Math.min(state.currentIndex + 1, state.posts.length) };
+      }),
+
       importTemplates: (newTemplates) => set((state) => ({
         templates: [...state.templates, ...newTemplates]
       }))
