@@ -27,7 +27,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <nav className="space-y-1 flex-1">
-            <NavItem href="/feed" icon={Home} label="Feed" active={location === "/feed"} />
+            <NavItem href="/feed" icon={Home} label="Feed" active={location.startsWith("/feed")} />
             <NavItem href="/niche" icon={Compass} label="Niches" active={location === "/niche"} />
             <NavItem href="/import" icon={Upload} label="Import" active={location === "/import"} />
             <NavItem href="/profile" icon={User} label="Profile" active={location === "/profile"} />
@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile Bottom Nav */}
       {showNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t flex items-center justify-around z-50 px-4 pb-safe">
-          <MobileNavItem href="/feed" icon={Home} active={location === "/feed"} />
+          <MobileNavItem href="/feed" icon={Home} active={location.startsWith("/feed")} />
           <MobileNavItem href="/niche" icon={Compass} active={location === "/niche"} />
           <div className="relative -top-5">
              <Link href="/import">
@@ -76,8 +76,8 @@ function NavItem({ href, icon: Icon, label, active }: any) {
     <Link href={href}>
       <button className={cn(
         "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-        active 
-          ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+        active
+          ? "bg-sidebar-accent text-sidebar-accent-foreground"
           : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
       )}>
         <Icon size={18} />

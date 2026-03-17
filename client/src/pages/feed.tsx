@@ -1,21 +1,139 @@
 import { useStore } from "@/lib/store";
-import { useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Heart, X, Copy, Send, RefreshCw, Wand2 } from "lucide-react";
+import { MessageSquare, Heart, X, Copy, Send, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+type SortOption = "newest" | "most-engagement";
+type TimeRange = "all" | "24h" | "7d" | "30d";
+
+function parseFilterParams() {
+  const params = new URLSearchParams(window.location.search);
+  const niche = params.get("niche") ?? "all";
+  const sort = (params.get("sort") as SortOption) ?? "newest";
+  const range = (params.get("range") as TimeRange) ?? "all";
+
+  return {
+    niche,
+    sort: sort === "most-engagement" ? "most-engagement" : "newest",
+    range: ["all", "24h", "7d", "30d"].includes(range) ? (range as TimeRange) : "all",
+  };
+}
+
+function syncFilterParams(niche: string, sort: SortOption, range: TimeRange) {
+  const params = new URLSearchParams(window.location.search);
+
+  if (niche === "all") params.delete("niche");
+  else params.set("niche", niche);
+
+  if (sort === "newest") params.delete("sort");
+  else params.set("sort", sort);
+
+  if (range === "all") params.delete("range");
+  else params.set("range", range);
+
+  const query = params.toString();
+  const target = `${window.location.pathname}${query ? `?${query}` : ""}`;
+  window.history.replaceState({}, "", target);
+}
+
+function toMillis(timestamp: string) {
+  const ms = Date.parse(timestamp);
+  return Number.isNaN(ms) ? 0 : ms;
+}
+
+function withinRange(timestamp: string, range: TimeRange) {
+  if (range === "all") return true;
+
+  const postTime = toMillis(timestamp);
+  if (!postTime) return false;
+
+  const now = Date.now();
+  const windows: Record<Exclude<TimeRange, "all">, number> = {
+    "24h": 24 * 60 * 60 * 1000,
+    "7d": 7 * 24 * 60 * 60 * 1000,
+    "30d": 30 * 24 * 60 * 60 * 1000,
+  };
+
+  return now - postTime <= windows[range as Exclude<TimeRange, "all">];
+}
+
+function formatRelative(timestamp: string) {
+  const ts = toMillis(timestamp);
+  if (!ts) return timestamp;
+
+  const delta = Math.max(Date.now() - ts, 0);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (delta < hour) return `${Math.max(1, Math.floor(delta / minute))}m ago`;
+  if (delta < day) return `${Math.floor(delta / hour)}h ago`;
+  return `${Math.floor(delta / day)}d ago`;
+}
+
 export default function Feed() {
-  const { posts, currentIndex, nextPost, templates, addPoints, user } = useStore();
+  const { posts, templates, addPoints } = useStore();
+  const [filters, setFilters] = useState(parseFilterParams);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [commentMode, setCommentMode] = useState(false);
   const [currentDraft, setCurrentDraft] = useState("");
   const { toast } = useToast();
 
-  const currentPost = posts[currentIndex];
+  const availableNiches = useMemo(() => {
+    return Array.from(new Set(posts.flatMap((post) => post.tags))).sort();
+  }, [posts]);
+
+  const filteredPosts = useMemo(() => {
+    const withIndex = posts.map((post, index) => ({ post, index }));
+
+    const filtered = withIndex.filter(({ post }) => {
+      const nicheMatch = filters.niche === "all" || post.tags.includes(filters.niche);
+      const rangeMatch = withinRange(post.timestamp, filters.range);
+      return nicheMatch && rangeMatch;
+    });
+
+    const sorted = filtered.sort((a, b) => {
+      if (filters.sort === "most-engagement") {
+        const byEngagement = b.post.engagementScore - a.post.engagementScore;
+        if (byEngagement !== 0) return byEngagement;
+      }
+
+      const byTime = toMillis(b.post.timestamp) - toMillis(a.post.timestamp);
+      if (byTime !== 0) return byTime;
+
+      return a.index - b.index;
+    });
+
+    return sorted.map((entry) => entry.post);
+  }, [posts, filters]);
+
+  const currentPost = filteredPosts[currentIndex];
+
+  useEffect(() => {
+    syncFilterParams(filters.niche, filters.sort, filters.range);
+  }, [filters]);
+
+  useEffect(() => {
+    setCommentMode(false);
+    setCurrentDraft("");
+    setCurrentIndex(0);
+  }, [filters]);
+
+  useEffect(() => {
+    if (currentIndex >= filteredPosts.length) {
+      setCurrentIndex(Math.max(filteredPosts.length - 1, 0));
+    }
+  }, [currentIndex, filteredPosts.length]);
+
+  const moveToNext = () => {
+    setCurrentIndex((prev) => Math.min(prev + 1, filteredPosts.length));
+  };
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (direction === 'right') {
@@ -23,7 +141,7 @@ export default function Feed() {
       toast({ description: "Post saved to liked!" });
       setCommentMode(true); // Open comment mode immediately on like
     } else {
-      nextPost();
+      moveToNext();
     }
   };
 
@@ -34,7 +152,7 @@ export default function Feed() {
     let text = template.content;
     text = text.replace('{creatorName}', currentPost.creatorName.split(' ')[0]);
     text = text.replace('{topic}', currentPost.tags[0] || 'content');
-    
+
     setCurrentDraft(text);
   };
 
@@ -47,7 +165,7 @@ export default function Feed() {
     addPoints(10);
     setCommentMode(false);
     setCurrentDraft("");
-    nextPost();
+    moveToNext();
   };
 
   const handleCopy = () => {
@@ -56,10 +174,116 @@ export default function Feed() {
     addPoints(2); // Small reward for copying
   };
 
-  if (!currentPost) return <div className="text-center mt-20">No more posts!</div>;
+  const hasActiveFilters = filters.niche !== "all" || filters.sort !== "newest" || filters.range !== "all";
+
+  if (!currentPost) {
+    return (
+      <div className="max-w-md mx-auto mt-10 space-y-4">
+        <Card className="p-5 space-y-4 border-dashed">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">Feed Filters</h2>
+            <p className="text-sm text-muted-foreground">Passe Nische, Zeitraum und Sortierung an. Die URL bleibt synchron und teilbar.</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
+            <select
+              value={filters.niche}
+              onChange={(e) => setFilters((prev) => ({ ...prev, niche: e.target.value }))}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">Alle Nischen</option>
+              {availableNiches.map((niche) => (
+                <option key={niche} value={niche}>{niche}</option>
+              ))}
+            </select>
+
+            <select
+              value={filters.range}
+              onChange={(e) => setFilters((prev) => ({ ...prev, range: e.target.value as TimeRange }))}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">Alle Zeitraeume</option>
+              <option value="24h">Letzte 24h</option>
+              <option value="7d">Letzte 7 Tage</option>
+              <option value="30d">Letzte 30 Tage</option>
+            </select>
+
+            <select
+              value={filters.sort}
+              onChange={(e) => setFilters((prev) => ({ ...prev, sort: e.target.value as SortOption }))}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="newest">Neueste zuerst</option>
+              <option value="most-engagement">Meiste Engagements</option>
+            </select>
+          </div>
+
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              onClick={() => setFilters({ niche: "all", sort: "newest", range: "all" })}
+            >
+              Filter zuruecksetzen
+            </Button>
+          )}
+        </Card>
+
+        <Card className="p-6 text-center">
+          <p className="font-semibold">Keine Posts fuer diese Auswahl</p>
+          <p className="text-sm text-muted-foreground mt-1">Versuche einen groesseren Zeitraum oder setze die Filter zurueck.</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-[calc(100vh-140px)] flex flex-col max-w-md mx-auto relative">
+    <div className="h-[calc(100vh-140px)] flex flex-col max-w-md mx-auto relative space-y-3">
+      <Card className="p-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <select
+            value={filters.niche}
+            onChange={(e) => setFilters((prev) => ({ ...prev, niche: e.target.value }))}
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            <option value="all">Alle Nischen</option>
+            {availableNiches.map((niche) => (
+              <option key={niche} value={niche}>{niche}</option>
+            ))}
+          </select>
+
+          <select
+            value={filters.range}
+            onChange={(e) => setFilters((prev) => ({ ...prev, range: e.target.value as TimeRange }))}
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            <option value="all">Zeitraum: Alle</option>
+            <option value="24h">Zeitraum: 24h</option>
+            <option value="7d">Zeitraum: 7 Tage</option>
+            <option value="30d">Zeitraum: 30 Tage</option>
+          </select>
+
+          <select
+            value={filters.sort}
+            onChange={(e) => setFilters((prev) => ({ ...prev, sort: e.target.value as SortOption }))}
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            <option value="newest">Sort: Neueste</option>
+            <option value="most-engagement">Sort: Engagement</option>
+          </select>
+        </div>
+
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-2"
+            onClick={() => setFilters({ niche: "all", sort: "newest", range: "all" })}
+          >
+            Reset Filter
+          </Button>
+        )}
+      </Card>
+
       <div className="flex-1 relative perspective-1000">
         <AnimatePresence mode="wait">
           {!commentMode ? (
@@ -86,7 +310,7 @@ export default function Feed() {
                     </Avatar>
                     <div>
                       <h3 className="font-bold text-lg">{currentPost.creatorName}</h3>
-                      <p className="text-sm text-muted-foreground">{currentPost.creatorHandle} • {currentPost.timestamp}</p>
+                      <p className="text-sm text-muted-foreground">{currentPost.creatorHandle} • {formatRelative(currentPost.timestamp)}</p>
                     </div>
                     <Badge variant="outline" className="ml-auto">
                       {currentPost.platform}
@@ -105,22 +329,25 @@ export default function Feed() {
                         </span>
                       ))}
                     </div>
+                    <div className="mt-3 text-xs text-muted-foreground">
+                      Engagement: {currentPost.engagementScore}
+                    </div>
                   </div>
                 </div>
 
                 {/* Actions Footer */}
                 <div className="p-4 bg-muted/30 grid grid-cols-2 gap-4">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
+                  <Button
+                    variant="outline"
+                    size="lg"
                     className="h-14 text-muted-foreground border-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
                     onClick={() => handleSwipe('left')}
                   >
                     <X size={24} />
                     <span className="ml-2">Skip</span>
                   </Button>
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="h-14 bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90"
                     onClick={() => handleSwipe('right')}
                   >
@@ -131,8 +358,8 @@ export default function Feed() {
               </Card>
             </motion.div>
           ) : (
-            <CommentEditor 
-              post={currentPost} 
+            <CommentEditor
+              post={currentPost}
               onCancel={() => setCommentMode(false)}
               onPost={handlePostComment}
               templates={templates}
@@ -183,7 +410,7 @@ function CommentEditor({ post, onCancel, onPost, templates, currentDraft, setDra
 
         {/* Editor */}
         <div className="flex-1 relative">
-          <Textarea 
+          <Textarea
             value={currentDraft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Write a thoughtful comment..."

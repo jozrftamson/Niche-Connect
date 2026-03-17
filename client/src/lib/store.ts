@@ -10,6 +10,7 @@ export interface Post {
   tags: string[];
   platform: 'Twitter' | 'LinkedIn' | 'Instagram';
   timestamp: string;
+  engagementScore: number;
 }
 
 export interface CommentTemplate {
@@ -51,7 +52,8 @@ const MOCK_POSTS: Post[] = [
     content: 'The web is becoming more complex, but the tools are getting better. What is your favorite dev tool this year?',
     tags: ['webdev', 'javascript', 'tools'],
     platform: 'Twitter',
-    timestamp: '2h ago'
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    engagementScore: 92,
   },
   {
     id: '2',
@@ -61,7 +63,8 @@ const MOCK_POSTS: Post[] = [
     content: 'Speed is a feature. If your site is slow, your conversion rate drops. Optimize your LCP.',
     tags: ['performance', 'web', 'business'],
     platform: 'Twitter',
-    timestamp: '4h ago'
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    engagementScore: 133,
   },
   {
     id: '3',
@@ -71,7 +74,8 @@ const MOCK_POSTS: Post[] = [
     content: 'JavaScript design patterns are still relevant. Which one do you use the most?',
     tags: ['javascript', 'patterns', 'learning'],
     platform: 'LinkedIn',
-    timestamp: '5h ago'
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    engagementScore: 74,
   },
   {
     id: '4',
@@ -81,7 +85,8 @@ const MOCK_POSTS: Post[] = [
     content: 'React Server Components are a mental model shift. It takes time to click, but when it does, it simplifies so much.',
     tags: ['react', 'rsc', 'frontend'],
     platform: 'Twitter',
-    timestamp: '1d ago'
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    engagementScore: 180,
   }
 ];
 

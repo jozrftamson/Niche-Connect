@@ -13,6 +13,8 @@ export default async function handler(
     platformPostId: `sample-${Date.now()}`,
     text: "Hello from sample post",
     url: "https://example.com",
+    niche: "tech",
+    engagementScore: Math.floor(Math.random() * 200),
   }).returning();
 
   sendJson(res, 201, { ok: true, post: rows[0] });
