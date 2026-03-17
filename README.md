@@ -1,158 +1,50 @@
-# Niche-Connect
+# Niche-Connect Monorepo
 
-A community engagement platform built with React, Express, TypeScript, and PostgreSQL.
+This repo contains two apps:
 
-## Prerequisites
+- `apps/miniapp`: Base Onchain Mini App (Next.js)
+- `.` (repo root): Niche-Connect (Vite + Express)
 
-Before running this application, ensure you have the following installed:
+## Local development
 
-- **Node.js** (version 20 or higher)
-- **npm** (comes with Node.js)
-- **PostgreSQL** (version 12 or higher) - *Optional, only needed for persistent data storage*
-
-## Installation
-
-1. **Clone the repository** (if not already done):
-   ```bash
-   git clone <repository-url>
-   cd Niche-Connect
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-## Environment Setup
-
-The application can run with in-memory storage by default for development. However, for production or if you want persistent data, you'll need to set up a PostgreSQL database.
-
-### Optional: Database Configuration
-
-If you want to use PostgreSQL instead of in-memory storage:
-
-1. **Copy the example environment file**:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Edit the `.env` file** and update the database connection string with your PostgreSQL credentials:
-   ```
-   DATABASE_URL=postgresql://username:password@localhost:5432/niche_connect
-   ```
-
-   Replace `username`, `password`, and the database name with your actual PostgreSQL credentials.
-
-3. **Push the database schema** (only needed if using PostgreSQL):
-   ```bash
-   npm run db:push
-   ```
-
-## Running the Application
-
-### Quick Start (No Database Required)
-
-The fastest way to get started is to run the development server, which uses in-memory storage:
+### Mini App
 
 ```bash
+cd /home/josef/projeckt/Github/Nischenverbindung/Niche-Connect/apps/miniapp
+npm install
 npm run dev
 ```
 
-This starts the Express server with hot-reloading on port 5000. The server also handles serving the Vite development client.
-
-### Alternative: Client-Only Development
-
-You can also run only the Vite development server:
+### Niche-Connect
 
 ```bash
-npm run dev:client
+cd /home/josef/projeckt/Github/Nischenverbindung/Niche-Connect
+npm install
+npm run dev
 ```
 
-This runs only the Vite development server on port 5000.
+## Vercel setup (two projects)
 
-### Production Mode
+Create two Vercel projects pointing at this repo:
 
-To run the application in production:
+1. **Mini App**
+   - Root Directory: `apps/miniapp`
+   - Build Command: `npm run build`
+   - Output Directory: `.next`
+2. **Niche-Connect**
+   - Root Directory: `.`
+   - Build Command: `npm run build`
+   - Output Directory: `dist/public`
 
-1. **Build the application**:
-   ```bash
-   npm run build
-   ```
+Note: Niche-Connect uses an Express server. On Vercel, the API is served via
+serverless functions under `/api/*`.
 
-2. **Start the production server**:
-   ```bash
-   npm start
-   ```
+## Vercel Functions (API)
 
-The production server will run on port 5000 by default.
+When deploying Niche-Connect to Vercel, the API is exposed via:
 
-## Available Scripts
-
-- `npm run dev` - Start the development server (backend with Vite integration)
-- `npm run dev:client` - Start only the Vite development client
-- `npm run build` - Build the application for production
-- `npm run start` - Start the production server
-- `npm run check` - Run TypeScript type checking
-- `npm run db:push` - Push database schema changes to PostgreSQL
-
-## Accessing the Application
-
-Once the application is running, open your browser and navigate to:
-
-```
-http://localhost:5000
-```
-
-## Troubleshooting
-
-### Database Connection Issues
-
-If you encounter database connection errors:
-- Ensure PostgreSQL is running
-- Verify your `DATABASE_URL` is correct in the `.env` file
-- Check that the database exists or create it using one of these methods:
-  - Using psql: `createdb -U username niche_connect`
-  - Using SQL: `CREATE DATABASE niche_connect;`
-  - Using a GUI tool like pgAdmin or DBeaver
-
-### Port Already in Use
-
-If port 5000 is already in use:
-- Stop any other applications using port 5000
-- Or modify the port in the `.replit` file or application configuration
-
-### Dependencies Installation Fails
-
-If `npm install` fails:
-- Try clearing the npm cache: `npm cache clean --force`
-- Delete `node_modules` and `package-lock.json`, then run `npm install` again
-
----
-
-## Anleitung auf Deutsch / German Instructions
-
-### Code aus Git Repository ausführen
-
-So führen Sie den Code aus einem Git Repository aus:
-
-1. **Repository klonen** (falls noch nicht geschehen):
-   ```bash
-   git clone https://github.com/jozrftamson/Niche-Connect.git
-   cd Niche-Connect
-   ```
-
-2. **Abhängigkeiten installieren**:
-   ```bash
-   npm install
-   ```
-
-3. **Anwendung starten**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Im Browser öffnen**: `http://localhost:5000`
-
-Die Anwendung läuft mit In-Memory-Speicher und benötigt keine Datenbank für die Entwicklung.
-
-**Hinweis**: Git ist ein Versionskontrollsystem zum Verwalten von Code. Um den Code auszuführen, müssen Sie ihn zuerst aus Git klonen (wie oben gezeigt) und dann lokal auf Ihrem Computer mit `npm run dev` starten.
+- `api/health.ts` → `/api/health`
+- `api/echo.ts` → `/api/echo`
+- `api/posts.ts` → `/api/posts`
+- `api/posts/sample.ts` → `/api/posts/sample`
+- `api/engagements.ts` → `/api/engagements`
