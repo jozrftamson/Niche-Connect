@@ -1,5 +1,7 @@
 # Niche-Connect Monorepo
 
+[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/jozrftamson/Niche-Connect?utm_source=badge)
+
 This repo contains two apps:
 
 - `apps/miniapp`: Base Onchain Mini App (Next.js)
