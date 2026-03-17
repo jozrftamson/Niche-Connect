@@ -1,3 +1,3 @@
-import handler from "./agents/search.js";
+import handler from "./agents/search";
 
 export default handler;

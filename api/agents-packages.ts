@@ -1,3 +1,3 @@
-import handler from "./agents/packages.js";
+import handler from "./agents/packages";
 
 export default handler;

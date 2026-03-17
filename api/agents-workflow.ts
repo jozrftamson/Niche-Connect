@@ -1,3 +1,3 @@
-import handler from "./agents/workflow.js";
+import handler from "./agents/workflow";
 
 export default handler;
