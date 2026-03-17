@@ -59,6 +59,30 @@ export const insertPostSchema = createInsertSchema(posts).pick({
   engagementScore: true,
 });
 
+export const engagements = pgTable(
+  "engagements",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    postId: text("post_id").notNull(),
+    userId: text("user_id").notNull(),
+    type: text("type").notNull().default("comment"),
+    message: text("message"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    engagementsPostIdx: index("engagements_post_idx").on(table.postId),
+    engagementsUserIdx: index("engagements_user_idx").on(table.userId),
+    engagementsCreatedAtIdx: index("engagements_created_at_idx").on(table.createdAt),
+  }),
+);
+
+export const insertEngagementSchema = createInsertSchema(engagements).pick({
+  postId: true,
+  userId: true,
+  type: true,
+  message: true,
+});
+
 export const insertAgentPackageSchema = createInsertSchema(agentPackages).pick({
   slug: true,
   title: true,
@@ -70,5 +94,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertPost = z.infer<typeof insertPostSchema>;
 export type Post = typeof posts.$inferSelect;
+export type InsertEngagement = z.infer<typeof insertEngagementSchema>;
+export type Engagement = typeof engagements.$inferSelect;
 export type InsertAgentPackage = z.infer<typeof insertAgentPackageSchema>;
 export type AgentPackage = typeof agentPackages.$inferSelect;
