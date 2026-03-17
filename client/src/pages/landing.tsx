@@ -1,72 +1,200 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, CheckCircle, Shield } from "lucide-react";
+import { ArrowRight, BadgeCheck, Sparkles, TrendingUp } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="px-6 py-4 flex items-center justify-between">
-        <div className="font-bold text-xl tracking-tight">EngageFlow</div>
-        <Link href="/auth">
-          <Button variant="outline" className="rounded-full">Log In</Button>
-        </Link>
-      </header>
-
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12 md:py-24 max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
-          <Shield size={14} />
-          100% Compliant & Safe
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-grid opacity-40 [mask-image:radial-gradient(60%_55%_at_50%_0%,black,transparent)]" />
+          <div className="absolute -top-32 right-[-6rem] h-72 w-72 rounded-full bg-primary/25 blur-3xl" />
+          <div className="absolute top-24 -left-20 h-72 w-72 rounded-full bg-accent/25 blur-3xl" />
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
-          Authentic Growth,<br />
-          Zero Spam.
-        </h1>
+        <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+              <span className="font-heading text-sm tracking-[0.2em]">NC</span>
+            </div>
+            <div className="leading-tight">
+              <div className="font-heading text-lg">Niche-Connect</div>
+              <div className="text-xs text-muted-foreground">Signal-first engagement</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/auth">
+              <Button variant="ghost" className="rounded-full text-sm">Join beta</Button>
+            </Link>
+            <Link href="/auth">
+              <Button variant="outline" className="rounded-full">Log In</Button>
+            </Link>
+          </div>
+        </header>
 
-        <p className="text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
-          Discover creators in your niche and engage with meaningful comments. 
-          Use our "1-Tap" manual workflow to build real relationships without bots.
-        </p>
+        <main className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 pb-20 pt-6 lg:grid-cols-[1.1fr_0.9fr] lg:pt-14">
+          <div className="flex flex-col justify-center">
+            <div className="fade-up inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              <Sparkles size={14} />
+              Manual-first, 100% compliant
+            </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-          <Link href="/auth">
-            <Button size="lg" className="rounded-full text-lg h-14 px-8 w-full sm:w-auto">
-              Get Started
-              <ArrowRight className="ml-2" size={18} />
+            <h1 className="fade-up mt-6 text-5xl font-semibold tracking-tight md:text-7xl">
+              Build trust in
+              <span className="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent"> every comment</span>.
+            </h1>
+
+            <p className="fade-up mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
+              Find creators in your exact niche, craft authentic replies, and grow without spammy bots.
+              Niche-Connect keeps engagement human while scaling your momentum.
+            </p>
+
+            <div className="fade-up mt-10 flex flex-col gap-4 sm:flex-row">
+              <Link href="/auth">
+                <Button size="lg" className="h-12 rounded-full px-6 text-base">
+                  Start free
+                  <ArrowRight className="ml-2" size={18} />
+                </Button>
+              </Link>
+              <Button variant="secondary" size="lg" className="h-12 rounded-full px-6 text-base">
+                Watch demo
+              </Button>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                Manual engagement workflow
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-accent" />
+                Real-time niche discovery
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-foreground/40" />
+                Ready for Base mini app
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="glass-card fade-up rounded-3xl p-6 md:p-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Live Pulse</p>
+                  <h3 className="mt-2 text-2xl font-heading font-semibold">Niche Signal Map</h3>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <TrendingUp size={18} />
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Creator match rate</span>
+                    <span className="font-medium text-foreground">92%</span>
+                  </div>
+                  <div className="mt-3 h-2 w-full rounded-full bg-muted">
+                    <div className="h-2 w-[92%] rounded-full bg-primary" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Stat title="Replies today" value="148" sub="Across 5 niches" />
+                  <Stat title="Spam risk" value="Low" sub="Manual verified" />
+                </div>
+              </div>
+            </div>
+
+            <div className="pointer-events-none absolute -bottom-10 -left-6 hidden lg:block">
+              <div className="glass-card float-slow rounded-2xl p-4">
+                <p className="text-xs text-muted-foreground">Top niche right now</p>
+                <div className="mt-2 text-lg font-heading font-semibold">Creator Growth</div>
+                <div className="mt-3 inline-flex items-center gap-2 text-sm text-primary">
+                  <TrendingUp size={14} />
+                  +22% engagement
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <section className="mx-auto w-full max-w-6xl px-6 pb-16">
+        <div className="grid gap-6 md:grid-cols-3">
+          <Feature
+            title="Niche Discovery"
+            desc="Curated feeds surface the creators who matter most to your current focus."
+            icon={Sparkles}
+          />
+          <Feature
+            title="Smart Templates"
+            desc="Import your voice once, personalize every reply with zero robotic output."
+            icon={BadgeCheck}
+          />
+          <Feature
+            title="Gamified Momentum"
+            desc="Earn points for real interactions and unlock visibility boosts over time."
+            icon={TrendingUp}
+          />
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-6 pb-24">
+        <div className="rounded-3xl border border-border/70 bg-surface px-8 py-10 shadow-[var(--shadow-card)] md:flex md:items-center md:justify-between md:gap-10">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-3 py-1 text-xs font-medium text-accent">
+              <BadgeCheck size={14} />
+              Built for compliant growth
+            </div>
+            <h2 className="mt-4 text-3xl font-heading font-semibold">Start with a niche, not a megaphone.</h2>
+            <p className="mt-3 max-w-xl text-muted-foreground">
+              Align your outreach with the right communities and let the mini app carry the momentum everywhere you post.
+            </p>
+          </div>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row md:mt-0">
+            <Link href="/auth">
+              <Button size="lg" className="h-12 rounded-full px-6 text-base">
+                Launch now
+              </Button>
+            </Link>
+            <Button variant="outline" size="lg" className="h-12 rounded-full px-6 text-base">
+              Talk to us
             </Button>
-          </Link>
-          <Button variant="secondary" size="lg" className="rounded-full text-lg h-14 px-8 w-full sm:w-auto">
-            View Demo
-          </Button>
+          </div>
         </div>
-
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-          <Feature 
-            title="Niche Discovery" 
-            desc="Select your topics and get a curated feed of relevant posts to engage with."
-          />
-          <Feature 
-            title="Smart Templates" 
-            desc="Import your own comment templates and let us fill in the variables for you."
-          />
-          <Feature 
-            title="Gamified Rewards" 
-            desc="Earn tokens for every manual interaction and boost your own profile visibility."
-          />
-        </div>
-      </main>
+      </section>
     </div>
   );
 }
 
-function Feature({ title, desc }: { title: string, desc: string }) {
+function Feature({
+  title,
+  desc,
+  icon: Icon,
+}: {
+  title: string;
+  desc: string;
+  icon: typeof BadgeCheck;
+}) {
   return (
-    <div className="p-6 rounded-2xl bg-secondary/50 border border-border/50">
-      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
-        <CheckCircle size={20} />
+    <div className="group rounded-2xl border border-border/70 bg-card/80 p-6 shadow-[var(--shadow-subtle)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-card)]">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <Icon size={18} />
       </div>
       <h3 className="font-bold text-lg mb-2">{title}</h3>
       <p className="text-muted-foreground">{desc}</p>
+    </div>
+  );
+}
+
+function Stat({ title, value, sub }: { title: string; value: string; sub: string }) {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+      <p className="text-xs text-muted-foreground">{title}</p>
+      <div className="mt-2 text-xl font-heading font-semibold">{value}</div>
+      <p className="mt-1 text-xs text-muted-foreground">{sub}</p>
     </div>
   );
 }

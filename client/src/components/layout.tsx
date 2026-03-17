@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { Home, Compass, Upload, User, Zap } from "lucide-react";
+import { Home, Compass, Upload, User, Zap, Bot } from "lucide-react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -30,6 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <NavItem href="/feed" icon={Home} label="Feed" active={location.startsWith("/feed")} />
             <NavItem href="/niche" icon={Compass} label="Niches" active={location === "/niche"} />
             <NavItem href="/import" icon={Upload} label="Import" active={location === "/import"} />
+            <NavItem href="/agents" icon={Bot} label="Agents" active={location === "/agents"} />
             <NavItem href="/profile" icon={User} label="Profile" active={location === "/profile"} />
             <NavItem href="/wallet" icon={Zap} label="Wallet" active={location === "/wallet"} />
           </nav>
@@ -52,6 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t flex items-center justify-around z-50 px-4 pb-safe">
           <MobileNavItem href="/feed" icon={Home} active={location.startsWith("/feed")} />
           <MobileNavItem href="/niche" icon={Compass} active={location === "/niche"} />
+           <MobileNavItem href="/agents" icon={Bot} active={location === "/agents"} />
           <div className="relative -top-5">
              <Link href="/import">
                 <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-transform">
@@ -59,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </div>
              </Link>
           </div>
-          <MobileNavItem href="/wallet" icon={Zap} active={location === "/wallet"} />
+           <MobileNavItem href="/wallet" icon={Zap} active={location === "/wallet"} />
           <MobileNavItem href="/profile" icon={User} active={location === "/profile"} />
         </nav>
       )}

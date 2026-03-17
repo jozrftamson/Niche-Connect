@@ -13,6 +13,7 @@ import NicheSelect from "@/pages/niche-select";
 import Feed from "@/pages/feed";
 import Import from "@/pages/import";
 import Profile from "@/pages/profile";
+import Agents from "@/pages/agents";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,13 +25,14 @@ function Router() {
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/auth" component={Auth} />
-        
+
         {/* Protected Routes (Mock) */}
         {isAuthenticated ? (
           <>
             <Route path="/niche" component={NicheSelect} />
             <Route path="/feed" component={Feed} />
             <Route path="/import" component={Import} />
+            <Route path="/agents" component={Agents} />
             <Route path="/profile" component={Profile} />
             <Route path="/wallet" component={Profile} /> {/* Reuse profile for wallet for now */}
           </>
@@ -46,7 +48,7 @@ function Router() {
             }}
           </Route>
         )}
-        
+
         <Route component={NotFound} />
       </Switch>
     </Layout>

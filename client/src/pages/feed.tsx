@@ -1,4 +1,4 @@
-import { useStore } from "@/lib/store";
+import { type Post, useStore } from "@/lib/store";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -12,30 +12,86 @@ import { useToast } from "@/hooks/use-toast";
 type SortOption = "newest" | "most-engagement";
 type TimeRange = "all" | "24h" | "7d" | "30d";
 
+interface FeedFilters {
+  niche: string;
+  sort: SortOption;
+  range: TimeRange;
+  account: string;
+  hashtag: string;
+}
+
+interface AgentSearchItem {
+  id: string;
+  platform: string;
+  text: string;
+  niche: string;
+  engagementScore: number;
+  createdAt: string;
+  sourceAccount: string;
+  hashtags: string[];
+}
+
+function normalize(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function mapAgentRecordToPost(item: AgentSearchItem): Post {
+  const platformMap: Record<string, Post["platform"]> = {
+    twitter: "Twitter",
+    linkedin: "LinkedIn",
+    instagram: "Instagram",
+  };
+
+  const account = item.sourceAccount || "creator";
+  const tags = item.hashtags.length ? item.hashtags : [item.niche];
+
+  return {
+    id: item.id,
+    creatorName: account,
+    creatorHandle: `@${account}`,
+    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(account)}`,
+    content: item.text,
+    tags,
+    platform: platformMap[item.platform.toLowerCase()] ?? "Twitter",
+    timestamp: item.createdAt,
+    engagementScore: item.engagementScore,
+  };
+}
+
 function parseFilterParams() {
   const params = new URLSearchParams(window.location.search);
   const niche = params.get("niche") ?? "all";
   const sort = (params.get("sort") as SortOption) ?? "newest";
   const range = (params.get("range") as TimeRange) ?? "all";
+  const account = params.get("account") ?? "";
+  const hashtag = (params.get("hashtag") ?? "").replace(/^#/, "");
 
   return {
     niche,
     sort: sort === "most-engagement" ? "most-engagement" : "newest",
     range: ["all", "24h", "7d", "30d"].includes(range) ? (range as TimeRange) : "all",
+    account,
+    hashtag,
   };
 }
 
-function syncFilterParams(niche: string, sort: SortOption, range: TimeRange) {
+function syncFilterParams(filters: FeedFilters) {
   const params = new URLSearchParams(window.location.search);
 
-  if (niche === "all") params.delete("niche");
-  else params.set("niche", niche);
+  if (filters.niche === "all") params.delete("niche");
+  else params.set("niche", filters.niche);
 
-  if (sort === "newest") params.delete("sort");
-  else params.set("sort", sort);
+  if (filters.sort === "newest") params.delete("sort");
+  else params.set("sort", filters.sort);
 
-  if (range === "all") params.delete("range");
-  else params.set("range", range);
+  if (filters.range === "all") params.delete("range");
+  else params.set("range", filters.range);
+
+  if (!filters.account.trim()) params.delete("account");
+  else params.set("account", filters.account.trim());
+
+  if (!filters.hashtag.trim()) params.delete("hashtag");
+  else params.set("hashtag", filters.hashtag.trim().replace(/^#/, ""));
 
   const query = params.toString();
   const target = `${window.location.pathname}${query ? `?${query}` : ""}`;
@@ -80,22 +136,63 @@ function formatRelative(timestamp: string) {
 export default function Feed() {
   const { posts, templates, addPoints } = useStore();
   const [filters, setFilters] = useState(parseFilterParams);
+  const [agentPosts, setAgentPosts] = useState<Post[] | null>(null);
+  const [agentLoading, setAgentLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [commentMode, setCommentMode] = useState(false);
   const [currentDraft, setCurrentDraft] = useState("");
   const { toast } = useToast();
 
+  useEffect(() => {
+    const needsAgentSearch = Boolean(filters.account.trim() || filters.hashtag.trim());
+    if (!needsAgentSearch) {
+      setAgentPosts(null);
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (filters.niche !== "all") params.set("niche", filters.niche);
+    if (filters.account.trim()) params.set("account", filters.account.trim());
+    if (filters.hashtag.trim()) params.set("hashtag", filters.hashtag.trim());
+    params.set("range", filters.range);
+    params.set("sort", filters.sort);
+    params.set("limit", "100");
+
+    setAgentLoading(true);
+    fetch(`/api/agents/search?${params.toString()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load agent search results");
+        return res.json();
+      })
+      .then((payload) => {
+        const resultItems: AgentSearchItem[] = Array.isArray(payload?.results) ? payload.results : [];
+        setAgentPosts(resultItems.map(mapAgentRecordToPost));
+      })
+      .catch(() => {
+        setAgentPosts([]);
+      })
+      .finally(() => {
+        setAgentLoading(false);
+      });
+  }, [filters.account, filters.hashtag, filters.niche, filters.range, filters.sort]);
+
+  const sourcePosts = agentPosts ?? posts;
+
   const availableNiches = useMemo(() => {
-    return Array.from(new Set(posts.flatMap((post) => post.tags))).sort();
-  }, [posts]);
+    return Array.from(new Set(sourcePosts.flatMap((post) => post.tags))).sort();
+  }, [sourcePosts]);
 
   const filteredPosts = useMemo(() => {
-    const withIndex = posts.map((post, index) => ({ post, index }));
+    const withIndex = sourcePosts.map((post, index) => ({ post, index }));
 
     const filtered = withIndex.filter(({ post }) => {
       const nicheMatch = filters.niche === "all" || post.tags.includes(filters.niche);
       const rangeMatch = withinRange(post.timestamp, filters.range);
-      return nicheMatch && rangeMatch;
+      const accountMatch = !filters.account.trim() || normalize(post.creatorHandle).includes(normalize(filters.account));
+      const hashtagMatch =
+        !filters.hashtag.trim() ||
+        post.tags.map(normalize).includes(normalize(filters.hashtag).replace(/^#/, ""));
+      return nicheMatch && rangeMatch && accountMatch && hashtagMatch;
     });
 
     const sorted = filtered.sort((a, b) => {
@@ -111,12 +208,12 @@ export default function Feed() {
     });
 
     return sorted.map((entry) => entry.post);
-  }, [posts, filters]);
+  }, [sourcePosts, filters]);
 
   const currentPost = filteredPosts[currentIndex];
 
   useEffect(() => {
-    syncFilterParams(filters.niche, filters.sort, filters.range);
+    syncFilterParams(filters);
   }, [filters]);
 
   useEffect(() => {
@@ -174,7 +271,12 @@ export default function Feed() {
     addPoints(2); // Small reward for copying
   };
 
-  const hasActiveFilters = filters.niche !== "all" || filters.sort !== "newest" || filters.range !== "all";
+  const hasActiveFilters =
+    filters.niche !== "all" ||
+    filters.sort !== "newest" ||
+    filters.range !== "all" ||
+    Boolean(filters.account.trim()) ||
+    Boolean(filters.hashtag.trim());
 
   if (!currentPost) {
     return (
@@ -216,12 +318,28 @@ export default function Feed() {
               <option value="newest">Neueste zuerst</option>
               <option value="most-engagement">Meiste Engagements</option>
             </select>
+
+            <input
+              value={filters.account}
+              onChange={(e) => setFilters((prev) => ({ ...prev, account: e.target.value }))}
+              placeholder="Account (z. B. rauchg)"
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            />
+
+            <input
+              value={filters.hashtag}
+              onChange={(e) => setFilters((prev) => ({ ...prev, hashtag: e.target.value.replace(/^#/, "") }))}
+              placeholder="Hashtag (z. B. react)"
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            />
           </div>
+
+          {agentLoading && <p className="text-xs text-muted-foreground">Agent-Suche laedt Ergebnisse...</p>}
 
           {hasActiveFilters && (
             <Button
               variant="outline"
-              onClick={() => setFilters({ niche: "all", sort: "newest", range: "all" })}
+              onClick={() => setFilters({ niche: "all", sort: "newest", range: "all", account: "", hashtag: "" })}
             >
               Filter zuruecksetzen
             </Button>
@@ -272,12 +390,29 @@ export default function Feed() {
           </select>
         </div>
 
+        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <input
+            value={filters.account}
+            onChange={(e) => setFilters((prev) => ({ ...prev, account: e.target.value }))}
+            placeholder="Account"
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          />
+          <input
+            value={filters.hashtag}
+            onChange={(e) => setFilters((prev) => ({ ...prev, hashtag: e.target.value.replace(/^#/, "") }))}
+            placeholder="Hashtag"
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          />
+        </div>
+
+        {agentLoading && <p className="mt-2 text-xs text-muted-foreground">Agent-Suche laedt Ergebnisse...</p>}
+
         {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             className="mt-2"
-            onClick={() => setFilters({ niche: "all", sort: "newest", range: "all" })}
+            onClick={() => setFilters({ niche: "all", sort: "newest", range: "all", account: "", hashtag: "" })}
           >
             Reset Filter
           </Button>

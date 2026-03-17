@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { index, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -14,16 +14,41 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
-export const posts = pgTable("posts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  platform: text("platform").notNull(),
-  platformPostId: text("platform_post_id").notNull().unique(),
-  text: text("text").notNull(),
-  url: text("url"),
-  niche: text("niche").notNull().default("general"),
-  engagementScore: integer("engagement_score").notNull().default(0),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const posts = pgTable(
+  "posts",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    platform: text("platform").notNull(),
+    platformPostId: text("platform_post_id").notNull().unique(),
+    text: text("text").notNull(),
+    url: text("url"),
+    niche: text("niche").notNull().default("general"),
+    engagementScore: integer("engagement_score").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    postsNicheIdx: index("posts_niche_idx").on(table.niche),
+    postsCreatedAtIdx: index("posts_created_at_idx").on(table.createdAt),
+    postsEngagementIdx: index("posts_engagement_idx").on(table.engagementScore),
+  }),
+);
+
+export const agentPackages = pgTable(
+  "agent_packages",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    workflowJson: text("workflow_json").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    agentPackagesSlugIdx: index("agent_packages_slug_idx").on(table.slug),
+    agentPackagesUpdatedAtIdx: index("agent_packages_updated_at_idx").on(table.updatedAt),
+  }),
+);
 
 export const insertPostSchema = createInsertSchema(posts).pick({
   platform: true,
@@ -34,7 +59,16 @@ export const insertPostSchema = createInsertSchema(posts).pick({
   engagementScore: true,
 });
 
+export const insertAgentPackageSchema = createInsertSchema(agentPackages).pick({
+  slug: true,
+  title: true,
+  description: true,
+  workflowJson: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertPost = z.infer<typeof insertPostSchema>;
 export type Post = typeof posts.$inferSelect;
+export type InsertAgentPackage = z.infer<typeof insertAgentPackageSchema>;
+export type AgentPackage = typeof agentPackages.$inferSelect;
