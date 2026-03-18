@@ -39,7 +39,8 @@ Die technische Projektdokumentation liegt im Ordner `docs/`.
 
 ## Live 🌐
 
-- 🖥️ Web App: [https://niche-connect.vercel.app](https://niche-connect.vercel.app)
+- 🖥️ Web App (Landing): [https://niche-connect.vercel.app](https://niche-connect.vercel.app)
+- 🔐 Direkt zum Login: [https://niche-connect.vercel.app/auth](https://niche-connect.vercel.app/auth)
 - ❤️ API Health: [https://niche-connect.vercel.app/api/health](https://niche-connect.vercel.app/api/health)
 
 ## Social und Icon Lizenzen 🎨

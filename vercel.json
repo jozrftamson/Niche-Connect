@@ -9,7 +9,11 @@
       }
     },
     {
-      "src": "api/**/*.ts",
+      "src": "api/[!_]*.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/posts/sample.ts",
       "use": "@vercel/node"
     }
   ],
