@@ -11,6 +11,8 @@
 
 ## Inhalt
 
+- [Live](#live)
+- [Social und Icon Lizenzen](#social-und-icon-lizenzen)
 - [Preview](#preview)
 - [Projektueberblick](#projektueberblick)
 - [Apps im Monorepo](#apps-im-monorepo)
@@ -22,6 +24,31 @@
 - [NPM Scripts](#npm-scripts)
 - [Projektstruktur](#projektstruktur)
 - [Architektur Diagramm](#architektur-diagramm)
+
+## Live
+
+- Web App: [https://niche-connect.vercel.app](https://niche-connect.vercel.app)
+- API Health: [https://niche-connect.vercel.app/api/health](https://niche-connect.vercel.app/api/health)
+
+## Social und Icon Lizenzen
+
+Wenn du unten im Footer Social-Links zeigst, kannst du diese Accounts verwenden:
+
+- Discord: [https://discord.com](https://discord.com) (spaeter durch deinen Server-Link ersetzen)
+- X: [https://x.com](https://x.com) (spaeter durch dein Profil ersetzen)
+- GitHub: [https://github.com](https://github.com) (spaeter durch dein Org/User ersetzen)
+- Bluesky: [https://bsky.app](https://bsky.app) (spaeter durch dein Profil ersetzen)
+- Base: [https://www.base.org](https://www.base.org)
+
+Icon-Hinweis pro Zeile/Beschreibung:
+
+- Discord Icon (MessageCircle), Quelle: lucide-react, Lizenz: ISC
+- X Icon (Twitter), Quelle: lucide-react, Lizenz: ISC
+- GitHub Icon (Github), Quelle: lucide-react, Lizenz: ISC
+- Bluesky Badge (Text-Badge), keine externe Icon-Lizenz noetig
+- Base Badge (Text-Badge), keine externe Icon-Lizenz noetig
+
+Wichtig: Plattform-Logos koennen zusaetzliche Markenrichtlinien haben. Vor Produktivnutzung immer die Brand-Guidelines von Discord, X, GitHub, Bluesky und Base pruefen.
 
 ## Preview
 

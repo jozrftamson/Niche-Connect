@@ -15,7 +15,7 @@ export default async function handler(
     url: "https://example.com",
     niche: "tech",
     engagementScore: Math.floor(Math.random() * 200),
-  }).returning();
+  } as any).returning();
 
   sendJson(res, 201, { ok: true, post: rows[0] });
 }

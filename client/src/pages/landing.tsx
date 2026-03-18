@@ -1,6 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, BadgeCheck, Sparkles, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Github,
+  MessageCircle,
+  Sparkles,
+  TrendingUp,
+  Twitter,
+} from "lucide-react";
 
 export default function Landing() {
   return (
@@ -165,6 +173,71 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      <footer className="mx-auto w-full max-w-6xl px-6 pb-12">
+        <div className="rounded-2xl border border-border/70 bg-card/60 p-6">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Follow Niche-Connect and visit our channels.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Icons are from lucide-react (ISC License).
+            </p>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a
+              href="https://discord.com"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm transition-colors hover:bg-muted"
+            >
+              <MessageCircle size={16} />
+              Discord
+            </a>
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm transition-colors hover:bg-muted"
+            >
+              <Twitter size={16} />
+              X
+            </a>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm transition-colors hover:bg-muted"
+            >
+              <Github size={16} />
+              GitHub
+            </a>
+            <a
+              href="https://bsky.app"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm transition-colors hover:bg-muted"
+            >
+              <span className="inline-flex h-4 min-w-4 items-center justify-center rounded bg-primary/15 px-1 text-[10px] font-semibold text-primary">
+                BS
+              </span>
+              Bluesky
+            </a>
+            <a
+              href="https://www.base.org"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm transition-colors hover:bg-muted"
+            >
+              <span className="inline-flex h-4 min-w-4 items-center justify-center rounded bg-accent/20 px-1 text-[10px] font-semibold text-accent">
+                BA
+              </span>
+              Base App
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

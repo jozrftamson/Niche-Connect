@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import { index, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const users = pgTable("users", {
@@ -9,9 +8,9 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(1),
 });
 
 export const posts = pgTable(
@@ -50,13 +49,13 @@ export const agentPackages = pgTable(
   }),
 );
 
-export const insertPostSchema = createInsertSchema(posts).pick({
-  platform: true,
-  platformPostId: true,
-  text: true,
-  url: true,
-  niche: true,
-  engagementScore: true,
+export const insertPostSchema = z.object({
+  platform: z.string().min(1),
+  platformPostId: z.string().min(1),
+  text: z.string().min(1),
+  url: z.string().url().optional().nullable(),
+  niche: z.string().min(1).optional(),
+  engagementScore: z.number().int().min(0).optional(),
 });
 
 export const engagements = pgTable(
@@ -76,18 +75,18 @@ export const engagements = pgTable(
   }),
 );
 
-export const insertEngagementSchema = createInsertSchema(engagements).pick({
-  postId: true,
-  userId: true,
-  type: true,
-  message: true,
+export const insertEngagementSchema = z.object({
+  postId: z.string().min(1),
+  userId: z.string().min(1),
+  type: z.string().min(1).optional(),
+  message: z.string().optional().nullable(),
 });
 
-export const insertAgentPackageSchema = createInsertSchema(agentPackages).pick({
-  slug: true,
-  title: true,
-  description: true,
-  workflowJson: true,
+export const insertAgentPackageSchema = z.object({
+  slug: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  workflowJson: z.string().min(2),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

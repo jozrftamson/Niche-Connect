@@ -372,16 +372,14 @@ export async function saveAgentPackage(payload: unknown) {
         title: parsed.title,
         description: parsed.description,
         workflowJson: JSON.stringify(workflow),
-        updatedAt: new Date(),
-      })
+      } as any)
       .onConflictDoUpdate({
         target: agentPackagesTable.slug,
         set: {
           title: parsed.title,
           description: parsed.description,
           workflowJson: JSON.stringify(workflow),
-          updatedAt: new Date(),
-        },
+        } as any,
       })
       .returning();
 

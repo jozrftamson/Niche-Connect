@@ -76,7 +76,7 @@ export default async function handler(
     const body = await readJsonBody(req);
     const payload = insertPostSchema.parse(body);
     const db = getDb();
-    const rows = await db.insert(posts).values(payload).returning();
+    const rows = await db.insert(posts).values(payload as any).returning();
     return sendJson(res, 201, { ok: true, post: rows[0] });
   }
 
