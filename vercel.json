@@ -14,6 +14,9 @@
     }
   ],
   "routes": [
+    { "src": "^/api/a2a/run$", "dest": "/api/a2a-run" },
+    { "src": "^/api/a2a/agent$", "dest": "/api/a2a-agent" },
+    { "src": "^/api/a2a/jobs$", "dest": "/api/a2a-jobs" },
     { "src": "^/api/agents/packages$", "dest": "/api/agents-packages" },
     { "src": "^/api/agents/search$", "dest": "/api/agents-search" },
     { "src": "^/api/agents/workflow$", "dest": "/api/agents-workflow" },
