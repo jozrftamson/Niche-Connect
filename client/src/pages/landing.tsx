@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { FigmaTemplateShowcase } from "@/components/figma-template-showcase";
 import { Link } from "wouter";
 import {
   ArrowRight,
@@ -148,6 +149,8 @@ export default function Landing() {
           />
         </div>
       </section>
+
+      <FigmaTemplateShowcase />
 
       <section className="mx-auto w-full max-w-6xl px-6 pb-24">
         <div className="rounded-3xl border border-border/70 bg-surface px-8 py-10 shadow-[var(--shadow-card)] md:flex md:items-center md:justify-between md:gap-10">

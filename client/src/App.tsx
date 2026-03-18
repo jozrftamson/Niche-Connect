@@ -15,16 +15,26 @@ import Import from "@/pages/import";
 import Profile from "@/pages/profile";
 import Agents from "@/pages/agents";
 import NotFound from "@/pages/not-found";
+import CrmPipelineTemplatePage from "@/pages/templates/crm-pipeline";
+import OnboardingFlowTemplatePage from "@/pages/templates/onboarding-flow";
+import SaasDashboardTemplatePage from "@/pages/templates/saas-dashboard";
 
 function Router() {
   const { isAuthenticated } = useStore();
   const [location] = useLocation();
+  const isPublicRoute =
+    location === "/" ||
+    location === "/auth" ||
+    location.startsWith("/templates/");
 
   return (
     <Layout>
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/auth" component={Auth} />
+        <Route path="/templates/crm-pipeline" component={CrmPipelineTemplatePage} />
+        <Route path="/templates/saas-dashboard" component={SaasDashboardTemplatePage} />
+        <Route path="/templates/onboarding-flow" component={OnboardingFlowTemplatePage} />
 
         {/* Protected Routes (Mock) */}
         {isAuthenticated ? (
@@ -40,7 +50,7 @@ function Router() {
           <Route>
             {/* Redirect unauth users to auth if they try to access protected pages */}
             {() => {
-               if (location !== "/" && location !== "/auth") {
+               if (!isPublicRoute) {
                  window.location.href = "/auth";
                  return null;
                }
