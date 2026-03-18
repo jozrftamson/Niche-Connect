@@ -1,0 +1,57 @@
+[
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something is broken or incorrect"
+  },
+  {
+    "name": "feature",
+    "color": "0e8a16",
+    "description": "New capability or enhancement"
+  },
+  {
+    "name": "tech-debt",
+    "color": "5319e7",
+    "description": "Maintainability or structural improvement"
+  },
+  {
+    "name": "docs",
+    "color": "0075ca",
+    "description": "Documentation improvements"
+  },
+  {
+    "name": "chore",
+    "color": "fbca04",
+    "description": "Tooling, maintenance, and non-feature work"
+  },
+  {
+    "name": "refactor",
+    "color": "c2e0c6",
+    "description": "Code structure changes without behavior change"
+  },
+  {
+    "name": "release",
+    "color": "1d76db",
+    "description": "Release preparation and rollout tracking"
+  },
+  {
+    "name": "priority:p0",
+    "color": "b60205",
+    "description": "Highest urgency"
+  },
+  {
+    "name": "priority:p1",
+    "color": "d93f0b",
+    "description": "High urgency"
+  },
+  {
+    "name": "priority:p2",
+    "color": "fbca04",
+    "description": "Normal urgency"
+  },
+  {
+    "name": "priority:p3",
+    "color": "0e8a16",
+    "description": "Low urgency"
+  }
+]

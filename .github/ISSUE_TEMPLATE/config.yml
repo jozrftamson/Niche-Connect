@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/josef/Niche-Connect/security/policy
+    about: Please report vulnerabilities via the security policy process.
+  - name: Project documentation
+    url: https://github.com/josef/Niche-Connect/blob/main/docs/README.md
+    about: Check architecture, API, and development guides before opening an issue.

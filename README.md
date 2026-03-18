@@ -11,6 +11,7 @@
 
 ## Inhalt 📚
 
+- 📘 Dokumentations-Hub
 - 🌐 Live
 - 🎨 Social und Icon Lizenzen
 - 👀 Preview
@@ -24,6 +25,17 @@
 - 📜 NPM Scripts
 - 🗂️ Projektstruktur
 - 🧠 Architektur Diagramm
+
+## Dokumentations-Hub 📘
+
+Die technische Projektdokumentation liegt im Ordner `docs/`.
+
+- 🧭 Einstieg: [`docs/README.md`](docs/README.md)
+- 🛠️ Entwicklung: [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
+- 🧠 Architektur: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- 🔌 API Referenz: [`docs/API.md`](docs/API.md)
+- 🤝 Contribution Guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- 🚀 Release Workflow: [`docs/RELEASE.md`](docs/RELEASE.md)
 
 ## Live 🌐
 
