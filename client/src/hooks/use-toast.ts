@@ -1,5 +1,5 @@
 import * as React from "react"
-
+import { useToast } from "@/hooks/use-toast";
 import type {
   ToastActionElement,
   ToastProps,
@@ -7,6 +7,8 @@ import type {
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
+const { toast } = useToast();
+toast({ title: "Comment Posted!", description: "You earned +10 Engagement Points." });
 
 type ToasterToast = ToastProps & {
   id: string
