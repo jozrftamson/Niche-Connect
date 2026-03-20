@@ -1,10 +1,11 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding");
-    return config;
+  turbopack: {
+    root: __dirname,
   },
+  // Remove custom webpack config for Turbopack compatibility
 };
 
 export default nextConfig;

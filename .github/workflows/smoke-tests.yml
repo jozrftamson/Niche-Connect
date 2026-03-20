@@ -1,39 +1,40 @@
 name: Smoke Tests
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
 
 jobs:
-  smoke:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    smoke:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
 
-      - name: Install dependencies (root)
-        run: npm install
+            - name: Install dependencies (root)
+              run: npm install
 
-      - name: Install dependencies (miniapp)
-        run: |
-          cd apps/miniapp
-          npm install
+            - name: Install dependencies (miniapp)
+              run: |
+                  cd apps/miniapp
+                  npm install
 
-      - name: Run agent smoke tests
-        run: |
-          npm run build
-          node script/agent-smoke.mjs
+            - name: Run agent smoke tests
+              run: |
+                  npm run build
+                  node script/agent-smoke.mjs
 
-      - name: Run a2a smoke tests
-        run: |
-          npm run build
-          node script/a2a-smoke.mjs
+            - name: Run a2a smoke tests
+              run: |
+                  npm run build
+                  node script/a2a-smoke.mjs

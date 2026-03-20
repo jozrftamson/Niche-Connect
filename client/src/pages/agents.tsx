@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { RoadmapSection } from "@/components/roadmap-section";
 
 interface AgentWorkflow {
   name: string;
@@ -190,101 +191,104 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-6 space-y-5">
-      <Card className="p-5 space-y-2">
-        <h1 className="text-2xl font-semibold">Agent Studio</h1>
-        <p className="text-sm text-muted-foreground">
-          JSON-basierter Workflow-Motor fuer Suche ueber Nischen, Accounts und Hashtags.
-        </p>
-      </Card>
+    <>
+      <div className="max-w-4xl mx-auto py-6 space-y-5">
+        <Card className="p-5 space-y-2">
+          <h1 className="text-2xl font-semibold">Agent Studio</h1>
+          <p className="text-sm text-muted-foreground">
+            JSON-basierter Workflow-Motor fuer Suche ueber Nischen, Accounts und Hashtags.
+          </p>
+        </Card>
 
-      <Card className="p-5 space-y-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <select
-            value={selectedId}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleSelectPackage(e.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-          >
-            <option value="">Package auswaehlen</option>
-            {packages.map((item: AgentPackage) => (
-              <option key={item.id} value={item.id}>
-                {item.title} ({item.id})
-              </option>
-            ))}
-          </select>
-
-          <input
-            value={packageTitle}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setPackageTitle(e.target.value)}
-            placeholder="Package Titel"
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-          />
-
-          <input
-            value={packageDescription}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setPackageDescription(e.target.value)}
-            placeholder="Package Beschreibung"
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={handleRun} disabled={isLoading}>Workflow ausfuehren</Button>
-          <Button variant="outline" onClick={handleSavePackage} disabled={isLoading}>Als Package speichern</Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setWorkflowJson(JSON.stringify(EMPTY_WORKFLOW, null, 2));
-              setSelectedId("");
-            }}
-          >
-            Reset Editor
-          </Button>
-        </div>
-      </Card>
-
-      <Card className="p-5 space-y-2">
-        <p className="text-sm font-medium">Workflow JSON</p>
-        <Textarea
-          value={workflowJson}
-          onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setWorkflowJson(e.target.value)}
-          className="min-h-[320px] font-mono text-xs"
-        />
-      </Card>
-
-      <Card className="p-5 space-y-3">
-        <p className="text-sm font-medium">Run Result</p>
-        {!runResult && <p className="text-sm text-muted-foreground">Noch keine Ausfuehrung.</p>}
-
-        {runResult && (
-          <div className="space-y-3">
-            <pre className="text-xs bg-muted p-3 rounded-md overflow-x-auto">
-              {JSON.stringify(
-                {
-                  ok: runResult.ok,
-                  workflow: runResult.workflow,
-                  trace: runResult.trace,
-                  count: runResult.result?.length ?? 0,
-                },
-                null,
-                2,
-              )}
-            </pre>
-
-            <div className="space-y-2">
-              {(runResult.result ?? []).slice(0, 8).map((item: NonNullable<WorkflowRunResponse["result"]>[number]) => (
-                <div key={item.id} className="p-3 rounded-md border">
-                  <div className="text-xs text-muted-foreground">
-                    {item.sourceAccount} | {item.niche} | score {item.engagementScore}
-                  </div>
-                  <p className="text-sm mt-1">{item.text}</p>
-                  <p className="text-xs text-muted-foreground mt-1">#{item.hashtags.join(" #")}</p>
-                </div>
+        <Card className="p-5 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <select
+              value={selectedId}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => handleSelectPackage(e.target.value)}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="">Package auswaehlen</option>
+              {packages.map((item: AgentPackage) => (
+                <option key={item.id} value={item.id}>
+                  {item.title} ({item.id})
+                </option>
               ))}
-            </div>
+            </select>
+
+            <input
+              value={packageTitle}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setPackageTitle(e.target.value)}
+              placeholder="Package Titel"
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            />
+
+            <input
+              value={packageDescription}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setPackageDescription(e.target.value)}
+              placeholder="Package Beschreibung"
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            />
           </div>
-        )}
-      </Card>
-    </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleRun} disabled={isLoading}>Workflow ausfuehren</Button>
+            <Button variant="outline" onClick={handleSavePackage} disabled={isLoading}>Als Package speichern</Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setWorkflowJson(JSON.stringify(EMPTY_WORKFLOW, null, 2));
+                setSelectedId("");
+              }}
+            >
+              Reset Editor
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-5 space-y-2">
+          <p className="text-sm font-medium">Workflow JSON</p>
+          <Textarea
+            value={workflowJson}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setWorkflowJson(e.target.value)}
+            className="min-h-[320px] font-mono text-xs"
+          />
+        </Card>
+
+        <Card className="p-5 space-y-3">
+          <p className="text-sm font-medium">Run Result</p>
+          {!runResult && <p className="text-sm text-muted-foreground">Noch keine Ausfuehrung.</p>}
+
+          {runResult && (
+            <div className="space-y-3">
+              <pre className="text-xs bg-muted p-3 rounded-md overflow-x-auto">
+                {JSON.stringify(
+                  {
+                    ok: runResult.ok,
+                    workflow: runResult.workflow,
+                    trace: runResult.trace,
+                    count: runResult.result?.length ?? 0,
+                  },
+                  null,
+                  2,
+                )}
+              </pre>
+
+              <div className="space-y-2">
+                {(runResult.result ?? []).slice(0, 8).map((item: NonNullable<WorkflowRunResponse["result"]>[number]) => (
+                  <div key={item.id} className="p-3 rounded-md border">
+                    <div className="text-xs text-muted-foreground">
+                      {item.sourceAccount} | {item.niche} | score {item.engagementScore}
+                    </div>
+                    <p className="text-sm mt-1">{item.text}</p>
+                    <p className="text-xs text-muted-foreground mt-1">#{item.hashtags.join(" #")}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
+      <RoadmapSection />
+    </>
   );
 }

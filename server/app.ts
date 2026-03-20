@@ -1,6 +1,12 @@
 import express, { type Express, type Request, Response, NextFunction } from "express";
 import type { Server } from "http";
 import { registerRoutes } from "./routes";
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 declare module "http" {
   interface IncomingMessage {
@@ -21,6 +27,8 @@ export function log(message: string, source = "express") {
 
 export function createApp(): Express {
   const app = express();
+
+  app.use(Sentry.Handlers.requestHandler());
 
   app.use(
     express.json({
@@ -57,6 +65,8 @@ export function createApp(): Express {
 
     next();
   });
+
+  app.use(Sentry.Handlers.errorHandler());
 
   return app;
 }

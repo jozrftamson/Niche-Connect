@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Twitter,
 } from "lucide-react";
+import { RoadmapSection } from "@/components/roadmap-section";
 
 export default function Landing() {
   return (
@@ -241,7 +242,9 @@ export default function Landing() {
           </div>
         </div>
       </footer>
-    </div>
+
+      <RoadmapSection />
+    </>
   );
 }
 

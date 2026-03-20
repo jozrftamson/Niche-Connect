@@ -58,3 +58,54 @@ Protected pages are guarded by store auth state and redirect unauthenticated use
 - Keep workflow execution deterministic and traceable.
 - Keep response envelopes stable (`ok`, `count`, `params`, `results`, `trace`, depending on endpoint).
 - Keep docs updated alongside route and payload changes.
+
+---
+
+# Architektur: Moderne Base App
+
+## Übersicht
+Diese Architektur beschreibt eine typische Base-App mit Web-Frontend, API, Blockchain-Integration und Mini App.
+
+## Hauptkomponenten
+- **Frontend:** React/Next.js, Tailwind CSS, UI-Komponenten
+- **Backend/API:** Express, Serverless Functions, REST/GraphQL
+- **Auth:** Wallet, QuickAuth, OAuth
+- **Datenbank:** PostgreSQL, Drizzle ORM
+- **Blockchain:** Base (Ethereum L2), OnchainKit, Farcaster SDK
+
+## Datenfluss
+User → Frontend → API → DB/Blockchain → Response → Frontend
+
+## Integrationen
+- Coinbase OnchainKit
+- Farcaster Mini App SDK
+- Vercel Deployment
+- GitHub Actions (CI/CD)
+
+## Security & Compliance
+- Auth-Checks, Rate-Limits, Compliance-Banner
+
+## Deployment
+- Vercel für Web/Miniapp
+- Domain-Mapping
+
+## Architekturdiagramm
+
+```mermaid
+graph TD
+  User --> Frontend
+  Frontend --> API
+  API --> DB
+  API --> Blockchain
+  Blockchain --> API
+  API --> Frontend
+```
+
+## Erweiterungen
+- Monitoring, Logging, Analytics
+- Mobile-Optimierung
+- Accessibility
+
+---
+
+Für Anpassungen oder Erweiterungen einfach melden!

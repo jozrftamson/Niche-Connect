@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, TrendingUp, Zap, Clock } from "lucide-react";
+import { RoadmapSection } from "@/components/roadmap-section";
 
 export default function Profile() {
   const { user } = useStore();
@@ -11,7 +12,7 @@ export default function Profile() {
   if (!user) return null;
 
   return (
-    <div className="py-8 space-y-8">
+    <>
       {/* Header */}
       <div className="flex items-center gap-6">
         <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
@@ -65,7 +66,7 @@ export default function Profile() {
           </div>
         </CardContent>
       </Card>
-      
+
       <div className="grid md:grid-cols-2 gap-8">
         <div>
             <h3 className="font-bold text-lg mb-4">Recent Activity</h3>
@@ -84,7 +85,8 @@ export default function Profile() {
             </div>
         </div>
       </div>
-    </div>
+      <RoadmapSection />
+    </>
   );
 }
 

@@ -13,11 +13,15 @@ function getSearchParams(req: IncomingMessage) {
   const niche = parsed.searchParams.get("niche") ?? "all";
   const sort = (parsed.searchParams.get("sort") as SortOption) ?? "newest";
   const range = (parsed.searchParams.get("range") as RangeOption) ?? "all";
+  const account = parsed.searchParams.get("account") ?? "";
+  const hashtag = parsed.searchParams.get("hashtag") ?? "";
 
   return {
     niche,
     sort: sort === "most-engagement" ? "most-engagement" : "newest",
     range: ["all", "24h", "7d", "30d"].includes(range) ? (range as RangeOption) : "all",
+    account,
+    hashtag,
   };
 }
 
@@ -42,14 +46,16 @@ export default async function handler(
   res: ServerResponse,
 ) {
   if (req.method === "GET") {
-    const { niche, sort, range } = getSearchParams(req);
+    const { niche, sort, range, account, hashtag } = getSearchParams(req);
     const db = getDb();
     const rows = await db.select().from(posts);
 
     const filtered = rows.filter((row) => {
       const nicheMatch = niche === "all" || row.niche === niche;
       const rangeMatch = inRange(row.createdAt, range);
-      return nicheMatch && rangeMatch;
+      const accountMatch = !account || row.platformPostId === account;
+      const hashtagMatch = !hashtag || (row.text && row.text.includes(`#${hashtag}`));
+      return nicheMatch && rangeMatch && accountMatch && hashtagMatch;
     });
 
     const sorted = filtered.sort((a, b) => {
@@ -66,7 +72,7 @@ export default async function handler(
 
     return sendJson(res, 200, {
       ok: true,
-      params: { niche, sort, range },
+      params: { niche, sort, range, account, hashtag },
       count: sorted.length,
       posts: sorted,
     });
