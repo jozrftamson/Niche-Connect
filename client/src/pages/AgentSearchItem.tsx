@@ -1,0 +1,3 @@
+interface AgentSearchItem {
+  if(, currentPost);
+}
