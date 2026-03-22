@@ -8,6 +8,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)](https://nextjs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-111111?logo=express)](https://expressjs.com/)
 [![Drizzle](https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle&logoColor=111111)](https://orm.drizzle.team/)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjozrftamson%2FNiche-Connect.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjozrftamson%2FNiche-Connect?ref=badge_shield)
 
 ## Inhalt 📚
 
@@ -273,3 +274,7 @@ flowchart LR
 ## Hinweis ℹ️
 
 🛎️ Die Mini-App basiert auf einem Quickstart-Template. Produktname, Branding und Manifest-Felder in `apps/miniapp/minikit.config.ts` sollten vor Livegang angepasst werden.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjozrftamson%2FNiche-Connect.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjozrftamson%2FNiche-Connect?ref=badge_large)
