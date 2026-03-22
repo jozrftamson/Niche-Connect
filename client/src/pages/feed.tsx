@@ -7,7 +7,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Heart, X, Copy, Send, Wand2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
+import { text } from "express";
+import { string } from "zod";
 
 type SortOption = "newest" | "most-engagement";
 type TimeRange = "all" | "24h" | "7d" | "30d";
@@ -20,8 +22,41 @@ interface FeedFilters {
   hashtag: string;
 }
 
-interface AgentSearchItem {
-    if (!currentPost) {
+ {
+      interface AgentSearchItem {
+        id: string;
+        label: string;
+      }
+
+      interface CommentEditorProps {
+        post: Post;
+        onCancel: () => void;
+        onPost: () => void;
+        templates: AgentSearchItem[];
+        currentDraft: string;
+        setDraft: (draft: string) => void;
+        onGenerate: (templateId: string) => void;
+        onCopy: () => void;
+      }
+      {
+        id: string;
+        label: string;
+      }
+      interface AgentSearchItem {
+        id: string;
+        label: string;
+      }
+
+      interface CommentEditorProps {
+        post: Post;
+        onCancel: () => void;
+        onPost: () => void;
+        templates: AgentSearchItem[];
+        currentDraft: string;
+        setDraft: (draft: string) => void;
+        onGenerate: (templateId: string) => void;
+        onCopy: () => void;
+      }
       return (
         <>
           <div className="max-w-md mx-auto mt-10 space-y-4">

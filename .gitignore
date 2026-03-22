@@ -4,7 +4,11 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+<<<<<<< Updated upstream
 .env
 .aider*
 .vercel
 .env*.local
+=======
+.aider*
+>>>>>>> Stashed changes
