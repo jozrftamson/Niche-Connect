@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { FigmaTemplateShowcase } from "@/components/figma-template-showcase";
 import { Link } from "wouter";
+<<<<<<< Updated upstream
 import {
   ArrowRight,
   BadgeCheck,
@@ -11,6 +12,9 @@ import {
   Twitter,
 } from "lucide-react";
 import { RoadmapSection } from "@/components/roadmap-section";
+=======
+import { ArrowRight, BadgeCheck, Sparkles, TrendingUp } from "lucide-react";
+>>>>>>> Stashed changes
 
 export default function Landing() {
   return (
@@ -151,8 +155,11 @@ export default function Landing() {
         </div>
       </section>
 
+<<<<<<< Updated upstream
       <FigmaTemplateShowcase />
 
+=======
+>>>>>>> Stashed changes
       <section className="mx-auto w-full max-w-6xl px-6 pb-24">
         <div className="rounded-3xl border border-border/70 bg-surface px-8 py-10 shadow-[var(--shadow-card)] md:flex md:items-center md:justify-between md:gap-10">
           <div>
@@ -177,6 +184,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
+<<<<<<< Updated upstream
 
       <footer className="mx-auto w-full max-w-6xl px-6 pb-12">
         <div className="rounded-2xl border border-border/70 bg-card/60 p-6">
@@ -245,6 +253,9 @@ export default function Landing() {
 
       <RoadmapSection />
     </>
+=======
+    </div>
+>>>>>>> Stashed changes
   );
 }
 
