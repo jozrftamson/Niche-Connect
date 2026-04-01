@@ -172,9 +172,10 @@ NEXT_PUBLIC_URL="http://localhost:3000"
 
 ## CI and security checks
 
-The repository now includes a three-part security baseline:
+The repository now includes a four-part security baseline:
 - `.github/workflows/super-linter.yml`
 - `.github/workflows/trivy.yml`
+- `.github/workflows/codeql.yml`
 - `.github/dependabot.yml`
 
 They run on pull requests, pushes to `main`, and manual workflow dispatches where applicable.
@@ -185,6 +186,7 @@ Current checks focus on practical security and repository hygiene:
 - `.env` file validation
 - JSON, YAML, and Markdown validation/formatting checks
 - filesystem vulnerability, secret, and misconfiguration scanning with Trivy
+- semantic code scanning for JavaScript/TypeScript with CodeQL
 - automated dependency and GitHub Actions update PRs via Dependabot
 
 This setup is intentionally conservative so it adds security value without forcing a large code-format migration in the app code.
@@ -233,11 +235,13 @@ Dependabot checks weekly for updates in:
 - miniapp npm dependencies (`/apps/miniapp/package.json`)
 - GitHub Actions versions under `.github/workflows`
 
-Recommended review flow for Dependabot PRs:
+CodeQL runs on pull requests, pushes to `main`, weekly on a schedule, and via manual dispatch. It is configured for JavaScript/TypeScript and complements Trivy by analyzing source code patterns instead of only filesystem/package risks.
+
+Recommended review flow for security automation:
 1. let CI run first
-2. merge patch/minor updates that pass cleanly
-3. review major updates more carefully
-4. fix the highest-priority Trivy findings first if security PRs appear
+2. fix CodeQL or Trivy findings with the highest severity first
+3. merge patch/minor Dependabot updates that pass cleanly
+4. review major dependency updates more carefully
 
 ## API Endpoints 🔌
 
