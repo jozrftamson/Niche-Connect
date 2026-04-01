@@ -1,0 +1,44 @@
+name: Super-Linter
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  super-linter:
+    name: Super-Linter
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter/slim@v8.5.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOG_LEVEL: WARN
+          VALIDATE_ALL_CODEBASE: false
+          IGNORE_GITIGNORED_FILES: true
+          FAIL_ON_INVALID_GITHUB_ACTIONS_EVENT_CONFIGURATION: true
+          LINTER_RULES_PATH: .github/linters
+          VALIDATE_ENV: true
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: true
+          VALIDATE_GITLEAKS: true
+          VALIDATE_JSON: true
+          VALIDATE_JSON_PRETTIER: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_YAML: true
+          VALIDATE_YAML_PRETTIER: true

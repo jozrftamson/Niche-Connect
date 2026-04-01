@@ -1,0 +1,18 @@
+format: table
+exit-code: 1
+severity:
+  - HIGH
+  - CRITICAL
+ignore-unfixed: true
+scan:
+  scanners:
+    - vuln
+    - secret
+    - misconfig
+skip-dirs:
+  - .git
+  - .local
+  - dist
+  - node_modules
+  - apps/miniapp/.next
+  - apps/miniapp/node_modules

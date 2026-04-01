@@ -170,6 +170,75 @@ NEXT_PUBLIC_URL="http://localhost:3000"
 2. 🏷️ `VERCEL_PROJECT_PRODUCTION_URL`
 3. 🔁 Fallback `http://localhost:3000`
 
+## CI and security checks
+
+The repository now includes a three-part security baseline:
+- `.github/workflows/super-linter.yml`
+- `.github/workflows/trivy.yml`
+- `.github/dependabot.yml`
+
+They run on pull requests, pushes to `main`, and manual workflow dispatches where applicable.
+
+Current checks focus on practical security and repository hygiene:
+- GitHub Actions workflow linting
+- secret scanning with Gitleaks via Super-Linter
+- `.env` file validation
+- JSON, YAML, and Markdown validation/formatting checks
+- filesystem vulnerability, secret, and misconfiguration scanning with Trivy
+- automated dependency and GitHub Actions update PRs via Dependabot
+
+This setup is intentionally conservative so it adds security value without forcing a large code-format migration in the app code.
+A useful next step would be adding a repo-wide ESLint or Biome configuration for the root app and then enabling JavaScript/TypeScript checks in Super-Linter too.
+
+You can run Super-Linter locally with Docker:
+
+```bash
+docker run --rm \
+  -e RUN_LOCAL=true \
+  -e DEFAULT_BRANCH=main \
+  -e VALIDATE_ALL_CODEBASE=true \
+  -e IGNORE_GITIGNORED_FILES=true \
+  -e VALIDATE_ENV=true \
+  -e VALIDATE_GITHUB_ACTIONS=true \
+  -e VALIDATE_GITHUB_ACTIONS_ZIZMOR=true \
+  -e VALIDATE_GITLEAKS=true \
+  -e VALIDATE_JSON=true \
+  -e VALIDATE_JSON_PRETTIER=true \
+  -e VALIDATE_MARKDOWN=true \
+  -e VALIDATE_YAML=true \
+  -e VALIDATE_YAML_PRETTIER=true \
+  -v "$(pwd)":/tmp/lint \
+  ghcr.io/super-linter/super-linter:latest
+```
+
+You can run Trivy locally with Docker:
+
+```bash
+docker run --rm \
+  -v "$(pwd)":/workdir \
+  -w /workdir \
+  ghcr.io/aquasecurity/trivy:latest fs \
+  --config trivy.yaml \
+  --skip-dirs .git \
+  --skip-dirs .local \
+  --skip-dirs dist \
+  --skip-dirs node_modules \
+  --skip-dirs apps/miniapp/.next \
+  --skip-dirs apps/miniapp/node_modules \
+  .
+```
+
+Dependabot checks weekly for updates in:
+- root npm dependencies (`/package.json`)
+- miniapp npm dependencies (`/apps/miniapp/package.json`)
+- GitHub Actions versions under `.github/workflows`
+
+Recommended review flow for Dependabot PRs:
+1. let CI run first
+2. merge patch/minor updates that pass cleanly
+3. review major updates more carefully
+4. fix the highest-priority Trivy findings first if security PRs appear
+
 ## API Endpoints 🔌
 
 ⚡ Serverless API unter `/api/*`:

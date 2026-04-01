@@ -8,3 +8,10 @@ vite.config.ts.*
 .aider*
 .vercel
 .env*.local
+.local/
+
+# Super-Linter outputs
+super-linter-output
+super-linter.log
+
+github_conf
