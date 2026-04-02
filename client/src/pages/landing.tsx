@@ -14,7 +14,8 @@ import { RoadmapSection } from "@/components/roadmap-section";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
+      <div className="min-h-screen bg-background text-foreground">
       <div className="relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-grid opacity-40 [mask-image:radial-gradient(60%_55%_at_50%_0%,black,transparent)]" />
@@ -242,6 +243,7 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+      </div>
 
       <RoadmapSection />
     </>

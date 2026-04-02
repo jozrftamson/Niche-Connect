@@ -1,3 +1,1 @@
-interface AgentSearchItem {
-  if(, currentPost);
-}
+export {};
