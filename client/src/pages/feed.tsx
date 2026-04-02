@@ -7,9 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Heart, X, Copy, Send, Wand2 } from "lucide-react";
-import { toast, useToast } from "@/hooks/use-toast";
-import { text } from "express";
-import { string } from "zod";
+import { useToast } from "@/hooks/use-toast";
 
 type SortOption = "newest" | "most-engagement";
 type TimeRange = "all" | "24h" | "7d" | "30d";
@@ -22,60 +20,236 @@ interface FeedFilters {
   hashtag: string;
 }
 
- {
-      interface AgentSearchItem {
-        id: string;
-        label: string;
-      }
+interface AgentSearchItem {
+  id: string;
+  platform: string;
+  text: string;
+  niche: string;
+  engagementScore: number;
+  createdAt: string;
+  sourceAccount: string;
+  hashtags: string[];
+}
 
-      interface CommentEditorProps {
-        post: Post;
-        onCancel: () => void;
-        onPost: () => void;
-        templates: AgentSearchItem[];
-        currentDraft: string;
-        setDraft: (draft: string) => void;
-        onGenerate: (templateId: string) => void;
-        onCopy: () => void;
-      }
-      {
-        id: string;
-        label: string;
-      }
-      interface AgentSearchItem {
-        id: string;
-        label: string;
-      }
+function normalize(value: string) {
+  return value.trim().toLowerCase();
+}
 
-      interface CommentEditorProps {
-        post: Post;
-        onCancel: () => void;
-        onPost: () => void;
-        templates: AgentSearchItem[];
-        currentDraft: string;
-        setDraft: (draft: string) => void;
-        onGenerate: (templateId: string) => void;
-        onCopy: () => void;
-      }
-      return (
-        <>
-          <div className="max-w-md mx-auto mt-10 space-y-4">
-            {/* ...existing code... */}
-          </div>
-          <RoadmapSection />
-        </>
-      );
+function mapAgentRecordToPost(item: AgentSearchItem): Post {
+  const platformMap: Record<string, Post["platform"]> = {
+    twitter: "Twitter",
+    linkedin: "LinkedIn",
+    instagram: "Instagram",
+  };
+
+  const account = item.sourceAccount || "creator";
+  const tags = item.hashtags.length ? item.hashtags : [item.niche];
+
+  return {
+    id: item.id,
+    creatorName: account,
+    creatorHandle: `@${account}`,
+    avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(account)}`,
+    content: item.text,
+    tags,
+    platform: platformMap[item.platform.toLowerCase()] ?? "Twitter",
+    timestamp: item.createdAt,
+    engagementScore: item.engagementScore,
+  };
+}
+
+function parseFilterParams(): FeedFilters {
+  const params = new URLSearchParams(window.location.search);
+  const niche = params.get("niche") ?? "all";
+  const sort = (params.get("sort") as SortOption) ?? "newest";
+  const range = (params.get("range") as TimeRange) ?? "all";
+  const account = params.get("account") ?? "";
+  const hashtag = (params.get("hashtag") ?? "").replace(/^#/, "");
+
+  return {
+    niche,
+    sort: sort === "most-engagement" ? "most-engagement" : "newest",
+    range: ["all", "24h", "7d", "30d"].includes(range) ? (range as TimeRange) : "all",
+    account,
+    hashtag,
+  };
+}
+
+function syncFilterParams(filters: FeedFilters) {
+  const params = new URLSearchParams(window.location.search);
+
+  if (filters.niche === "all") params.delete("niche");
+  else params.set("niche", filters.niche);
+
+  if (filters.sort === "newest") params.delete("sort");
+  else params.set("sort", filters.sort);
+
+  if (filters.range === "all") params.delete("range");
+  else params.set("range", filters.range);
+
+  if (!filters.account.trim()) params.delete("account");
+  else params.set("account", filters.account.trim());
+
+  if (!filters.hashtag.trim()) params.delete("hashtag");
+  else params.set("hashtag", filters.hashtag.trim().replace(/^#/, ""));
+
+  const query = params.toString();
+  const target = `${window.location.pathname}${query ? `?${query}` : ""}`;
+  window.history.replaceState({}, "", target);
+}
+
+function toMillis(timestamp: string) {
+  const ms = Date.parse(timestamp);
+  return Number.isNaN(ms) ? 0 : ms;
+}
+
+function withinRange(timestamp: string, range: TimeRange) {
+  if (range === "all") return true;
+
+  const postTime = toMillis(timestamp);
+  if (!postTime) return false;
+
+  const now = Date.now();
+  const windows: Record<Exclude<TimeRange, "all">, number> = {
+    "24h": 24 * 60 * 60 * 1000,
+    "7d": 7 * 24 * 60 * 60 * 1000,
+    "30d": 30 * 24 * 60 * 60 * 1000,
+  };
+
+  return now - postTime <= windows[range as Exclude<TimeRange, "all">];
+}
+
+function formatRelative(timestamp: string) {
+  const ts = toMillis(timestamp);
+  if (!ts) return timestamp;
+
+  const delta = Math.max(Date.now() - ts, 0);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (delta < hour) return `${Math.max(1, Math.floor(delta / minute))}m ago`;
+  if (delta < day) return `${Math.floor(delta / hour)}h ago`;
+  return `${Math.floor(delta / day)}d ago`;
+}
+
+export default function Feed() {
+  const { posts, templates, addPoints } = useStore();
+  const [filters, setFilters] = useState<FeedFilters>(parseFilterParams);
+  const [agentPosts, setAgentPosts] = useState<Post[] | null>(null);
+  const [agentLoading, setAgentLoading] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [commentMode, setCommentMode] = useState(false);
+  const [currentDraft, setCurrentDraft] = useState("");
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const needsAgentSearch = Boolean(filters.account.trim() || filters.hashtag.trim());
+    if (!needsAgentSearch) {
+      setAgentPosts(null);
+      return;
     }
 
-    return (
-      <>
-        <div className="h-[calc(100vh-140px)] flex flex-col max-w-md mx-auto relative space-y-3">
-          {/* ...existing Feed layout... */}
-        </div>
-        <RoadmapSection />
-      </>
-    );
-  }
+    const params = new URLSearchParams();
+    if (filters.niche !== "all") params.set("niche", filters.niche);
+    if (filters.account.trim()) params.set("account", filters.account.trim());
+    if (filters.hashtag.trim()) params.set("hashtag", filters.hashtag.trim());
+    params.set("range", filters.range);
+    params.set("sort", filters.sort);
+    params.set("limit", "100");
+
+    setAgentLoading(true);
+    fetch(`/api/agents/search?${params.toString()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load agent search results");
+        return res.json();
+      })
+      .then((payload) => {
+        const resultItems: AgentSearchItem[] = Array.isArray(payload?.results) ? payload.results : [];
+        setAgentPosts(resultItems.map(mapAgentRecordToPost));
+      })
+      .catch(() => {
+        setAgentPosts([]);
+      })
+      .finally(() => {
+        setAgentLoading(false);
+      });
+  }, [filters.account, filters.hashtag, filters.niche, filters.range, filters.sort]);
+
+  const sourcePosts = agentPosts ?? posts;
+
+  const availableNiches = useMemo(() => {
+    return Array.from(new Set(sourcePosts.flatMap((post) => post.tags))).sort();
+  }, [sourcePosts]);
+
+  const filteredPosts = useMemo(() => {
+    const withIndex = sourcePosts.map((post, index) => ({ post, index }));
+
+    const filtered = withIndex.filter(({ post }) => {
+      const nicheMatch = filters.niche === "all" || post.tags.includes(filters.niche);
+      const rangeMatch = withinRange(post.timestamp, filters.range);
+      const accountMatch = !filters.account.trim() || normalize(post.creatorHandle).includes(normalize(filters.account));
+      const hashtagMatch =
+        !filters.hashtag.trim() ||
+        post.tags.map(normalize).includes(normalize(filters.hashtag).replace(/^#/, ""));
+      return nicheMatch && rangeMatch && accountMatch && hashtagMatch;
+    });
+
+    const sorted = filtered.sort((a, b) => {
+      if (filters.sort === "most-engagement") {
+        const byEngagement = b.post.engagementScore - a.post.engagementScore;
+        if (byEngagement !== 0) return byEngagement;
+      }
+
+      const byTime = toMillis(b.post.timestamp) - toMillis(a.post.timestamp);
+      if (byTime !== 0) return byTime;
+
+      return a.index - b.index;
+    });
+
+    return sorted.map((entry) => entry.post);
+  }, [sourcePosts, filters]);
+
+  const currentPost = filteredPosts[currentIndex];
+
+  useEffect(() => {
+    syncFilterParams(filters);
+  }, [filters]);
+
+  useEffect(() => {
+    setCommentMode(false);
+    setCurrentDraft("");
+    setCurrentIndex(0);
+  }, [filters]);
+
+  useEffect(() => {
+    if (currentIndex >= filteredPosts.length) {
+      setCurrentIndex(Math.max(filteredPosts.length - 1, 0));
+    }
+  }, [currentIndex, filteredPosts.length]);
+
+  const moveToNext = () => {
+    setCurrentIndex((prev) => Math.min(prev + 1, filteredPosts.length));
+  };
+
+  const handleSwipe = (direction: 'left' | 'right') => {
+    if (direction === 'right') {
+      // Like logic
+      toast({ description: "Post saved to liked!" });
+      setCommentMode(true); // Open comment mode immediately on like
+    } else {
+      moveToNext();
+    }
+  };
+
+  const generateDraft = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (!template) return;
+
+    let text = template.content;
+    text = text.replace('{creatorName}', currentPost.creatorName.split(' ')[0]);
+    text = text.replace('{topic}', currentPost.tags[0] || 'content');
+
     setCurrentDraft(text);
   };
 

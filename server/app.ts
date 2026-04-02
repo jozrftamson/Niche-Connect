@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/node';
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   tracesSampleRate: 1.0,
+  integrations: [Sentry.expressIntegration()],
 });
 
 declare module "http" {
@@ -27,8 +28,6 @@ export function log(message: string, source = "express") {
 
 export function createApp(): Express {
   const app = express();
-
-  app.use(Sentry.Handlers.requestHandler());
 
   app.use(
     express.json({
@@ -66,8 +65,6 @@ export function createApp(): Express {
     next();
   });
 
-  app.use(Sentry.Handlers.errorHandler());
-
   return app;
 }
 
@@ -75,6 +72,8 @@ export async function initApp(app: Express, httpServer?: Server) {
   if (httpServer) {
     await registerRoutes(httpServer, app);
   }
+
+  Sentry.setupExpressErrorHandler(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
