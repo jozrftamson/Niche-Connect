@@ -173,6 +173,7 @@ NEXT_PUBLIC_URL="http://localhost:3000"
 ## CI and security checks
 
 The repository now includes a four-part security baseline:
+
 - `.github/workflows/super-linter.yml`
 - `.github/workflows/trivy.yml`
 - `.github/workflows/codeql.yml`
@@ -181,6 +182,7 @@ The repository now includes a four-part security baseline:
 They run on pull requests, pushes to `main`, and manual workflow dispatches where applicable.
 
 Current checks focus on practical security and repository hygiene:
+
 - GitHub Actions workflow linting
 - secret scanning with Gitleaks via Super-Linter
 - `.env` file validation
@@ -231,6 +233,7 @@ docker run --rm \
 ```
 
 Dependabot checks weekly for updates in:
+
 - root npm dependencies (`/package.json`)
 - miniapp npm dependencies (`/apps/miniapp/package.json`)
 - GitHub Actions versions under `.github/workflows`
@@ -238,6 +241,7 @@ Dependabot checks weekly for updates in:
 CodeQL runs on pull requests, pushes to `main`, weekly on a schedule, and via manual dispatch. It is configured for JavaScript/TypeScript and complements Trivy by analyzing source code patterns instead of only filesystem/package risks.
 
 Recommended review flow for security automation:
+
 1. let CI run first
 2. fix CodeQL or Trivy findings with the highest severity first
 3. merge patch/minor Dependabot updates that pass cleanly
@@ -348,6 +352,6 @@ flowchart LR
 
 🛎️ Die Mini-App basiert auf einem Quickstart-Template. Produktname, Branding und Manifest-Felder in `apps/miniapp/minikit.config.ts` sollten vor Livegang angepasst werden.
 
-
 ## License
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjozrftamson%2FNiche-Connect.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjozrftamson%2FNiche-Connect?ref=badge_large)

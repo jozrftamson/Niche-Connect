@@ -4,8 +4,8 @@ rules:
   document-start: disable
   truthy:
     allowed-values:
-      - 'true'
-      - 'false'
-      - 'on'
-      - 'off'
+      - "true"
+      - "false"
+      - "on"
+      - "off"
     check-keys: false
