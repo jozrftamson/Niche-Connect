@@ -31,12 +31,22 @@ jobs:
           cd apps/miniapp
           npm install
 
-      - name: Run agent smoke tests
-        run: |
-          npm run build
-          node script/agent-smoke.mjs
+      - name: Build root app
+        run: npm run build
 
-      - name: Run a2a smoke tests
+      - name: Start dev server and run smoke tests
+        env:
+          PORT: "5000"
+          AGENT_BASE_URL: "http://localhost:5000"
+          A2A_BASE_URL: "http://localhost:5000"
         run: |
-          npm run build
-          node script/a2a-smoke.mjs
+          set -euo pipefail
+
+          npm run dev &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+
+          node -e 'const url=(process.env.AGENT_BASE_URL||"http://localhost:5000")+"/api/health"; const deadline=Date.now()+60_000; const sleep=(ms)=>new Promise(r=>setTimeout(r,ms)); (async()=>{ while(Date.now()<deadline){ try{ const res=await fetch(url); if(res.ok){ process.exit(0); } } catch {} await sleep(1000); } console.error("Smoke server did not become ready:", url); process.exit(1); })();'
+
+          npm run test:agents
+          npm run test:a2a

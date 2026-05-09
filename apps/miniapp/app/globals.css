@@ -2,6 +2,10 @@
   :root {
     --background: #ffffff;
     --foreground: #171717;
+    --font-inter: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    --font-source-code-pro: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
   }
 
   @media (prefers-color-scheme: dark) {

@@ -1,6 +1,22 @@
 import type { IncomingMessage, ServerResponse } from "http";
 
 export async function readJsonBody(req: IncomingMessage) {
+  const reqWithBody = req as IncomingMessage & { body?: unknown; rawBody?: unknown };
+  if (reqWithBody.body && typeof reqWithBody.body === "object") {
+    return reqWithBody.body as Record<string, unknown>;
+  }
+
+  if (reqWithBody.rawBody) {
+    const raw =
+      typeof reqWithBody.rawBody === "string"
+        ? reqWithBody.rawBody
+        : Buffer.isBuffer(reqWithBody.rawBody)
+          ? reqWithBody.rawBody.toString("utf-8")
+          : Buffer.from(String(reqWithBody.rawBody)).toString("utf-8");
+
+    return raw ? JSON.parse(raw) : {};
+  }
+
   const chunks: Buffer[] = [];
   for await (const chunk of req) {
     chunks.push(Buffer.from(chunk));
