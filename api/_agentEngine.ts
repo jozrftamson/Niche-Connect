@@ -321,6 +321,8 @@ export const defaultAgentPackages: AgentPackageItem[] = [
   },
 ];
 
+const memoryAgentPackages = new Map<string, AgentPackageItem>();
+
 interface RawAgentPackageRow {
   slug: string;
   title: string;
@@ -355,7 +357,13 @@ export async function fetchAgentPackages() {
 
     return parsed.length ? parsed : defaultAgentPackages;
   } catch {
-    return defaultAgentPackages;
+    const merged = new Map<string, AgentPackageItem>();
+    defaultAgentPackages.forEach((pkg) => merged.set(pkg.id, pkg));
+    memoryAgentPackages.forEach((pkg) => merged.set(pkg.id, pkg));
+
+    const items = Array.from(merged.values());
+    items.sort((a, b) => a.title.localeCompare(b.title));
+    return items;
   }
 }
 
@@ -392,12 +400,15 @@ export async function saveAgentPackage(payload: unknown) {
     return mapped;
   } catch {
     // Fallback for environments without DB connectivity.
-    return {
+    const inMemory = {
       id: parsed.slug,
       title: parsed.title,
       description: parsed.description,
       workflow,
     };
+
+    memoryAgentPackages.set(inMemory.id, inMemory);
+    return inMemory;
   }
 }
 
@@ -417,6 +428,9 @@ export async function getAgentPackageById(id: string) {
   } catch {
     // Fall through to defaults
   }
+
+  const memory = memoryAgentPackages.get(id);
+  if (memory) return memory;
 
   return defaultAgentPackages.find((pkg) => pkg.id === id) ?? null;
 }
